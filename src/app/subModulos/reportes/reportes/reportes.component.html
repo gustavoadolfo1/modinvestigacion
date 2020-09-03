@@ -1,0 +1,141 @@
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white text-center">
+                REPORTES
+            </div>
+            <div class="card-body">
+                <div class="col-md-12 mb-2">
+
+                    <div class="row">
+                        <div class="col-sm-6 form-group mb-2">
+                            <label>Año</label>
+                            <select class="form-control" [(ngModel)]="anyo">
+                                <option value="all" selected="true">Todos</option>
+                                <option *ngFor="let dat of dataServidor.listaAnyo"
+                                        [value]="dat.iYearId">{{dat.iYearId}}</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6 form-group mb-2">
+                            <label>Estado</label>
+                            <select class="form-control" [(ngModel)]="iEstadoPropuesta">
+                                <option value="all" selected="true">Todos</option>
+                                <option value="0">Proyecto</option>
+                                <option value="1">Propuesta</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6 form-group mb-2">
+                            <label>Tipo de Proyecto</label>
+                            <select class="form-control" [(ngModel)]="tipo">
+                                <option *ngFor="let dat of dataServidor.listaTipo"
+                                        [value]="dat.iTipoProyectoId">{{dat.cTipoProyDescripcion}}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+
+                            <div class="col-md-12">
+                                <table class="table table-hover col-sm-12">
+                                    <thead>
+                                    <tr>
+                                        <th width="70%">Reporte</th>
+                                        <th width="30%" class="text-center"></th>
+                                    </tr>
+                                    <tr>
+                                        <td>Presupuesto Total de Proyectos por Año y Estado</td>
+                                        <td class="text-center"><button pButton type="button" label="Exportar a PDF" (click)="generarPdf('pptTotalProyXanyoEstPropt');"></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Presupuesto por Rubros por Año y Estado </td>
+                                        <td class="text-center"><button pButton type="button" label="Exportar a PDF" (click)="generarPdf('pptxRubroXanyoEstPropt');"></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Gasto por Rubros por Año y Estado </td>
+                                        <td class="text-center"><button pButton type="button" label="Exportar a PDF" (click)="generarPdf('gtxRubroXanyoEstPropt');"></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Reportes WEB por Año y Tipo de Proyecto</td>
+                                        <td class="text-center"><button pButton type="button" label="Exportar a PDF" (click)="generarPdf('reporte_web');"></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Reportes WEB por Año y Tipo de Proyecto</td>
+                                        <td class="text-center"><button pButton type="button" label="Exportar a Excel" (click)="generarPdf('reporte_web_excel');"></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Reportes detalle trimestral </td>
+                                        <td class="text-center"><button pButton type="button" label="Exportar a Excel" (click)="generarPdf('reporte_detalle_trimestral_excel');"></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Reportes Miembros del Proyecto por Año y Tipo de Proyecto</td>
+                                        <td class="text-center"><button pButton type="button" label="Exportar a PDF" (click)="generarPdf('reporte_miembros_proyecto');"></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Reportes Miembros del Proyecto por Año y Tipo de Proyecto</td>
+                                        <td class="text-center"><button pButton type="button" label="Exportar a Excel" (click)="generarPdf('reporte_miembros_proyecto_excel');"></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Consolidado de Proyectos por Año </td>
+                                        <td class="text-center"><button pButton type="button" label="Exportar a PDF" (click)="generarPdf('reporte_consolidado_proyectos');"></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Consolidado de Proyectos por Año </td>
+                                        <td class="text-center"><button pButton type="button" label="Exportar a Excel" (click)="generarPdf('reporte_consolidado_excel');"></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Consolidado Saldos de Proyectos por Año</td>
+                                        <td class="text-center"><button pButton type="button" label="Exportar a Excel" (click)="generarPdf('reporte_consolidadosaldos_excel');"></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Revision Items Financiables por Año</td>
+                                        <td class="text-center"><button pButton type="button" label="Exportar a PDF" (click)="generarPdf('reporte_revision_items');"></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Revision Items Financiables por Año</td>
+                                        <td class="text-center"><button pButton type="button" label="Exportar a Excel" (click)="generarPdf('reporte_revision_items_excel');"></button></td>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                    <div class="col-sm-6 form-group mb-2">
+                        <label>Escuela Profesional</label>
+                        <select class="form-control" [(ngModel)]="idCarrera">
+                            <option *ngFor="let dat of dataServidor.listaCarreras"
+                                    [value]="dat.iCarreraId">
+                                {{dat.cCarreraDsc}}</option>
+                        </select>
+                    </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+
+                            <div class="col-md-12">
+                                <table class="table table-hover col-sm-12">
+                                    <thead>
+                                    <tr>
+                                        <th width="70%">Reporte</th>
+                                        <th width="30%" class="text-center"></th>
+                                    </tr>
+                                    <tr>
+                                        <td>Reporte de Proyectos por Escuela de Docentes</td>
+                                        <td class="text-center"><button pButton type="button" label="Exportar a PDF" (click)="generarPdf('reporte_proyecto_docentesXescuela');"></button></td>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,123 @@
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white text-center">
+                TIPO DE PROYECTO
+            </div>
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <div class="input-group-append">
+                            <button class="btn btn-sm btn-outline-success" type="button"
+                                    (click)="llamarAccion(['nuevo', modalTipoProyecto])"
+                            >
+                                <app-ht-font-awesome name="plus"></app-ht-font-awesome>
+                                Nuevo Tipo de Proyecto
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <div class="form-inline">
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control form-control-sm"
+                                       [(ngModel)]="variableCriterio" (keyup.enter)="cargarLista()"
+                                       placeholder="Descripción"/>
+                                <div class="input-group-append">
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-secondary btn-sm"
+                                        (click)="cargarLista()"
+                                    >
+                                        <app-ht-font-awesome name="search"></app-ht-font-awesome>
+                                        Buscar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12 table-responsive">
+                        <table class="table table-hover table-bordered table-sm ">
+                            <thead class="thead-dark">
+                            <tr class="text-center">
+                                <th>#</th>
+                                <th>Descripción</th>
+                                <th>Concursable</th>
+                                <th width="10px"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let data of dataServidor.mostrarLista | paginate: { itemsPerPage: 25, currentPage: p }; index as i"
+                                (click)="modelos.sel_en_lista = data"
+                                [class.table-warning]="((modelos.sel_en_lista != null) && (modelos.sel_en_lista.iTipoProyectoId == data.iTipoProyectoId))">
+                                <td>{{(i + 1)}}</td>
+                                <td>{{data.cTipoProyDescripcion}}</td>
+                                <td class="text-center">{{(data.bConcursable==0)? 'NO' : 'SI' }}</td>
+                                <td class="text-center">
+                                    <div class="btn-group float-right" role="group" aria-label="---">
+                                        <button class="btn btn-sm btn-outline-info" ngbTooltip="Editar"
+                                                (click)="llamarAccion(['editar', modalTipoProyecto, data])">
+                                            <app-ht-font-awesome name="edit"></app-ht-font-awesome>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" ngbTooltip="Eliminar"
+                                                (click)="llamarAccion(['eliminar', modalTipoProyecto, data])">
+                                            <app-ht-font-awesome name="trash"></app-ht-font-awesome>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <pagination-controls (pageChange)="p = $event" previousLabel="Anterior"
+                                             nextLabel="Siguiente"></pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #modalTipoProyecto let-modal>
+    <div class="modal-header ht-modal-header">
+        <div class="modal-title">
+            <h4>Nuevo Tipo de Proyecto</h4>
+        </div>
+    </div>
+    <form [formGroup]="frmTipoProyecto" (ngSubmit)="enviarFormulario('mantenimiento_tipo_proyecto')">
+        <div class="modal-body row" style="margin: 2px;">
+            <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-sm-12 mb-3">
+                        <label>Descripción</label>
+                        <input type="text" class="form-control mb-3"
+                               (ngModelChange)="imprimirModalTitulo($event)"
+                               (change)="frmTipoProyectoControl.descripcion.setValue($event.target.value.toUpperCase())"
+                               formControlName="descripcion"
+                        >
+                        <app-ht-form-errors [control]="frmTipoProyectoControl.descripcion"></app-ht-form-errors>
+                    </div>
+                    <div class="col-sm-3 mb-3">
+                        <label>Concursable</label>
+                        <select class="form-control" formControlName="bConcursable" >
+                            <option [value]="0">NO</option>
+                            <option [value]="1">SI</option>
+                        </select>
+                        <app-ht-form-errors [control]="frmTipoProyectoControl.bConcursable"></app-ht-form-errors>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button pButton type="button" label="Guardar" class="ui-button-raised"
+                    (click)="enviarFormulario('mantenimiento_tipo_proyecto')"></button>
+            <button pButton type="button" label="Cancelar"
+                    class="ui-button-raised ui-button-warning"
+                    (click)="modal.dismiss('cancel'); limpiarFormulario();"></button>
+        </div>
+    </form>
+</ng-template>

@@ -1,0 +1,62 @@
+<div class="card o-hidden custom"
+     [@animate]="{value:'*',params:{y:'200px',opacity:'0',delay:'800ms', duration: '800ms'}}">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="p-4">
+                <div class="auth-logo text-center mb-4">
+                    <img src="assets/images/logo.png" alt="">
+                </div>
+                <h1 class="mb-3 text-18">Inicio de Sesión</h1>
+                <form [formGroup]="signinForm" (ngSubmit)="signin()">
+                    <div class="form-group">
+                        <label for="email">Usuarioaaa</label>
+                        <input id="email" class="form-control" formControlName="usuario" type="text"
+                               (change)="verAreasCredencial()"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label>Usuario con Dependencia</label>
+                        <div>
+                            <input id="conDependencia" type="radio" value="si" formControlName="conDependencia"
+                                   (click)="llamarAccion(['conDependencia'])">
+                            <label for="conDependencia">Si </label>
+                            <input id="sinDependencia" type="radio" value="no" formControlName="conDependencia"
+                                   (click)="llamarAccion(['sinDependencia'])">
+                            <label for="sinDependencia">No</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <ng-container *ngIf="this.mostrarConDependencia">
+                            <label for="dependencia">Dependencia</label>
+                            <select id="dependencia" class="form-control" formControlName="dependencia">
+                                <option *ngFor="let dependencia of dependenciasServ"
+                                        [value]="dependencia.iDepenId">{{dependencia.cDepenNombre}}</option>
+                            </select>
+                            <app-ht-form-errors control="dependencia"></app-ht-form-errors>
+                        </ng-container>
+                    </div>
+                    <div class="form-group">
+                        <ng-container *ngIf="!this.mostrarConDependencia">
+                            <label for="tipoUsuario">Tipo de Usuario</label>
+                            <select id="tipoUsuario" class="form-control" formControlName="tipoUsuario">
+                                <option selected [value]="0">Seleccione</option>
+                                <option [value]="1">Integrante de Proyecto</option>
+                                <option [value]="2">Par Evaluador</option>
+                            </select>
+                            <app-ht-form-errors control="tipoUsuario"></app-ht-form-errors>
+                        </ng-container>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <input id="password" class="form-control" formControlName="password" type="password">
+                    </div>
+                    <!-- <button class="btn btn-rounded btn-primary btn-block mt-2">Sign In</button> -->
+                    <btn-loading btnClass="btn-primary btn-block mt-3" [loadingText]="loadingText" [loading]="loading">
+                        Ingresar
+                    </btn-loading>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

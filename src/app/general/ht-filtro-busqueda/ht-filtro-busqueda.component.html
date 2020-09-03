@@ -1,0 +1,114 @@
+<form [formGroup]="frmFiltro">
+    <div class="row">
+        <div class="col-12">
+            <div class="form-inline">
+                <b>Buscar por: &nbsp;</b>
+                <label *ngIf="_opciones.includes(1)" class="form-check form-check-inline">
+                    <input type="radio" class="form-check-input" name="option" [value]="1"  formControlName="option">
+                    <span>Dia</span>
+                    <span class="checkmark"></span>
+                </label>
+                <label *ngIf="_opciones.includes(2)" class="form-check form-check-inline">
+                    <input type="radio" class="form-check-input" name="option" [value]="2"  formControlName="option">
+                    <span>Periodo</span>
+                    <span class="checkmark"></span>
+                </label>
+                <label *ngIf="_opciones.includes(3)" class="form-check form-check-inline">
+                    <input type="radio" class="form-check-input" name="option" [value]="3"  formControlName="option">
+                    <span>Rango de Fechas</span>
+                    <span class="checkmark"></span>
+                </label>
+                <label *ngIf="_opciones.includes(4)" class="form-check form-check-inline">
+                    <input type="radio" class="form-check-input" name="option" [value]="4"  formControlName="option">
+                    <span>Texto</span>
+                    <span class="checkmark"></span>
+                </label>
+                <label *ngIf="_opciones.includes(5)" class="form-check form-check-inline">
+                    <input type="radio" class="form-check-input" name="option" [value]="5"  formControlName="option">
+                    <span>Convocatoria</span>
+                    <span class="checkmark"></span>
+                </label>
+            </div>
+        </div><br><br>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-inline">
+                <ng-container *ngIf="this.frmFiltroControl.option.value == 1">
+                    <label>Fecha: &nbsp;</label>
+                    <input type="date" class="form-control form-control-sm" formControlName="fecha">
+                </ng-container>
+                <ng-container *ngIf="this.frmFiltroControl.option.value == 2">
+                    <label>Año: &nbsp;</label>
+                    <select class="form-control form-control-sm" formControlName="year" (ngModelChange)="cambiarSelect('anio')">
+                        <option value="">Seleccione Año...</option>
+                        <option *ngFor="let anio of dataAnios"
+                                [value]="anio.iYearId">{{anio.iYearId}}</option>
+                    </select>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <label>Mes: &nbsp;</label>
+                    <select class="form-control form-control-sm" id="selMes" formControlName="month">
+                        <option value="">Seleccione Mes...</option>
+                        <option *ngFor="let mes of dataMeses"
+                                [value]="mes.iTramMonthRegistro">{{mes.cMesDescripcion}}</option>
+                    </select>
+                </ng-container>
+                <ng-container *ngIf="this.frmFiltroControl.option.value == 3">
+                    <label>Desde: &nbsp;</label>
+                    <input type="date" class="form-control form-control-sm" formControlName="range_1" />
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <label>Hasta: &nbsp;</label>
+                    <input type="date" class="form-control form-control-sm" formControlName="range_2" />
+                </ng-container>
+                <ng-container *ngIf="this.frmFiltroControl.option.value == 4">
+                    <label>Año: &nbsp;</label>
+                    <select class="form-control form-control-sm" formControlName="yearCriterio">
+                        <option value="">Seleccione Año...</option>
+                        <option *ngFor="let anio of dataAnios"
+                                [value]="anio.iYearId">{{anio.iYearId}}</option>
+                    </select>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <label>Criterio: &nbsp;</label>
+                    <select class="form-control form-control-sm" formControlName="idCriterio">
+                        <option *ngFor="let crit of dataCriterios"
+                                [value]="crit.iCritId">{{crit.cCritDescripcion}}</option>
+                    </select>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <label>Texto: &nbsp;</label>
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control form-control-sm" formControlName="variableCriterio" (keyup.enter)="llenarLista()" />
+                        <div class="input-group-append">
+                            <button
+                                type="button"
+                                class="btn btn-outline-secondary btn-sm"
+                                (click)="llenarLista()"
+                            >
+                                <app-ht-font-awesome name="search"></app-ht-font-awesome> Buscar
+                            </button>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="this.frmFiltroControl.option.value == 5">
+                    <label>Convocatoria: &nbsp;</label>
+                    <select class="form-control form-control-sm" formControlName="idConvocatoria" (ngModelChange)="llenarLista()">
+                        <option *ngFor="let con of dataConvocatoria"
+                                [value]="con.iConvocatoriaId">{{con.cConvocatoria}}</option>
+                    </select>
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-append">
+                            <button
+                                type="button"
+                                class="btn btn-outline-secondary btn-sm"
+                                (click)="llenarLista()"
+                            >
+                                <app-ht-font-awesome name="search"></app-ht-font-awesome> Buscar
+                            </button>
+                        </div>
+                    </div>
+                </ng-container>
+
+            </div>
+        </div>
+    </div>
+</form>
+

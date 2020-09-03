@@ -1,0 +1,364 @@
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white text-center">
+                CONVOCATORIA
+            </div>
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <div class="input-group-append">
+                            <button class="btn btn-sm btn-outline-success" type="button"
+                                    (click)="llamarAccion(['nuevo', modalConvocatoria])"
+                            >
+                                <app-ht-font-awesome name="plus"></app-ht-font-awesome>
+                                Crear Publicación
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <div class="form-inline">
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control form-control-sm"
+                                       [(ngModel)]="variableCriterio" (keyup.enter)="cargarLista()"
+                                       placeholder="Descripción"/>
+                                <div class="input-group-append">
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-secondary btn-sm"
+                                        (click)="cargarLista()"
+                                    >
+                                        <app-ht-font-awesome name="search"></app-ht-font-awesome>
+                                        Buscar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12 table-responsive">
+                        <table class="table table-hover table-bordered table-sm ">
+                            <thead class="thead-dark">
+                            <tr class="text-center">
+                                <th>#</th>
+                                <th>Descripción</th>
+                                <th>Fecha de Inicio de Postulacion</th>
+                                <th>Fecha Término de Postulación</th>
+                                <th>Fecha Término de Visualización de resultados</th>
+
+                                <th>N° Integrantes</th>
+                                <th>Presupuesto</th>
+                                <th>Archivo</th>
+                                <th width="10px"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let data of dataServidor.mostrarLista | paginate: { itemsPerPage: 25, currentPage: p }; index as i"
+                                (click)="modelos.sel_en_lista = data"
+                                [class.table-warning]="((modelos.sel_en_lista != null) &&
+                                (modelos.sel_en_lista.iConvocatoriaId == data.iConvocatoriaId))">
+                                <td>{{(i + 1)}}</td>
+                                <td>{{data.cConvocatoria}}</td>
+                                <td>{{data.dtFechaInicio|date: 'short'}}</td>
+                                <td>{{data.dtFechaFinPostulacion|date: 'short'}}</td>
+                                <td>{{data.dtFechaFin|date: 'short'}}</td>
+
+                                <td class="text-right">{{data.iNumIntegrantes}}</td>
+                                <td class="text-right">{{data.nPresupuesto|number: '.2'}}</td>
+                                <td class="text-center">
+                                    <button *ngIf="data.cArchivoBases" type="button"
+                                            class="btn btn-outline-danger"
+                                            (click)="mostrarPDF(modalPDF, data.cArchivoBases)">
+                                        <app-ht-font-awesome name="file-pdf-o"></app-ht-font-awesome>
+                                        PDF
+                                    </button>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group float-right" role="group" aria-label="---">
+                                        <button class="btn btn-sm btn-outline-info" ngbTooltip="Editar"
+                                                (click)="llamarAccion(['editar', modalConvocatoria, data])">
+                                            <app-ht-font-awesome name="edit"></app-ht-font-awesome>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" ngbTooltip="Eliminar"
+                                                (click)="llamarAccion(['eliminar', modalConvocatoria, data])">
+                                            <app-ht-font-awesome name="trash"></app-ht-font-awesome>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <pagination-controls (pageChange)="p = $event" previousLabel="Anterior"
+                                             nextLabel="Siguiente"></pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #modalConvocatoria let-modal>
+    <div class="modal-header ht-modal-header">
+        <div class="modal-title">
+            <h4>Nueva publicación</h4>
+        </div>
+    </div>
+    <form [formGroup]="frmConvocatoria" (ngSubmit)="enviarFormulario('mantenimiento_convocatoria')">
+        <div class="modal-body row" style="margin: 2px;">
+            <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-sm-12 mb-3">
+                        <label>Título</label>
+                        <input type="text" class="form-control mb-3"
+                               (ngModelChange)="imprimirModalTitulo($event)"
+                               (change)="frmConvocatoriaControl.descripcion.setValue($event.target.value.toUpperCase())"
+                               formControlName="descripcion"
+                        >
+                        <app-ht-form-errors [control]="frmConvocatoriaControl.descripcion"></app-ht-form-errors>
+                    </div>
+                    <div class="col-sm-12 mb-3">
+                        <label>Descripción</label>
+                        <input type="text" class="form-control mb-3"
+                               (change)="frmConvocatoriaControl.detalle.setValue($event.target.value.toUpperCase())"
+                               formControlName="detalle"
+                        >
+                        <app-ht-form-errors [control]="frmConvocatoriaControl.detalle"></app-ht-form-errors>
+                    </div>
+
+
+
+                    <div class="col-sm-6 mb-3">
+                        <label>Fuente de Financiamiento</label>
+                        <select class="form-control" formControlName="iFuenteProyectoId">
+                            <option *ngFor="let dat of dataServidor.listaFuenteProyecto"
+                                    [value]="dat.iFuenteProyectoId">{{dat.cFuenteProyDescripcion}}</option>
+                        </select>
+                        <app-ht-form-errors
+                            [control]="frmConvocatoriaControl.iFuenteProyectoId"></app-ht-form-errors>
+                    </div>
+
+
+
+                    <div class="col-sm-6 mb-3">
+                        <label>Tipo de Proyecto</label>
+                        <select class="form-control" formControlName="iTipoProyectoId">
+                            <option *ngFor="let dat of dataServidor.listaTipoProyecto"
+                                    [value]="dat.iTipoProyectoId">{{dat.cTipoProyDescripcion}}</option>
+                        </select>
+                        <app-ht-form-errors
+                            [control]="frmConvocatoriaControl.iTipoProyectoId"></app-ht-form-errors>
+                    </div>
+                    <div class="col-sm-3 mb-3">
+                        <label>Fecha de Inicio de Publicación</label>
+                        <input type="date" class="form-control" formControlName="fechaInicio">
+                        <app-ht-form-errors [control]="frmConvocatoriaControl.fechaInicio"></app-ht-form-errors>
+                    </div>
+                    <div class="col-sm-3 mb-3">
+                        <label>Fecha de Término  de Postulación / Registro</label>
+                        <input type="date" class="form-control" formControlName="fechaFinPostulacion">
+                        <app-ht-form-errors [control]="frmConvocatoriaControl.fechaFinPostulacion"></app-ht-form-errors>
+                    </div>
+                    <div class="col-sm-3 mb-3">
+                        <label>Fecha de Término de Visualización de Resultados </label>
+                        <input type="date" class="form-control" formControlName="fechaFin"><!--type="datetime-local"-->
+                        <app-ht-form-errors [control]="frmConvocatoriaControl.fechaFin"></app-ht-form-errors>
+                    </div>
+
+                    <div class="col-sm-3 mb-3">
+                        <label>Duración del Proyecto en Meses</label>
+                        <input type="number" min=0 max=24 class="form-control" formControlName="iNumMesesProyecto">
+                        <app-ht-form-errors [control]="frmConvocatoriaControl.iNumMesesProyecto"></app-ht-form-errors>
+                    </div>
+                    <div class="col-sm-3 mb-3">
+                        <label>Duración de los Hitos en Meses</label>
+                        <input type="number" min=0 max=24 class="form-control" formControlName="iNumMesesHito">
+                        <app-ht-form-errors [control]="frmConvocatoriaControl.iNumMesesHito"></app-ht-form-errors>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Resol. de Aprobación</label>
+                        <input type="text" class="form-control form-control"
+                               formControlName="cResolucion"
+                               [class.is-invalid]="!frmConvocatoriaControl.cResolucion.valid"
+                               placeholder="Resolución"
+                               (change)="frmConvocatoriaControl.cResolucion.setValue($event.target.value.toUpperCase())"
+                        >
+                        <app-ht-form-errors
+                            [control]="frmConvocatoriaControl.cResolucion"></app-ht-form-errors>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>N° Integrantes</label>
+                        <input type="number" class="form-control form-control"
+                               formControlName="iNumIntegrantes"
+                               [class.is-invalid]="!frmConvocatoriaControl.iNumIntegrantes.valid"
+                               placeholder=""
+                        >
+                        <app-ht-form-errors
+                            [control]="frmConvocatoriaControl.iNumIntegrantes"></app-ht-form-errors>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Presupuesto</label>
+                        <input type="number" class="form-control form-control"
+                               formControlName="nPresupuesto"
+                               [class.is-invalid]="!frmConvocatoriaControl.nPresupuesto.valid"
+                               placeholder="Presupuesto"
+                        >
+                        <app-ht-form-errors
+                            [control]="frmConvocatoriaControl.nPresupuesto"></app-ht-form-errors>
+                    </div>
+                    <div class="col-sm-12 mb-3">
+                        <p-panel header="Archivos" [toggleable]="true"
+                                 [style]="{'margin-bottom':'20px'}">
+
+                            <div class="col-sm-12 mb-3">
+                                <label>Bases de la Convocatoria / Publicación </label>
+                                <br><label *ngIf="!['',null].includes(this.archivos.cArchivoBases)">Archivo
+                                Guardado: </label>
+                                <button pButton type="button" *ngIf="!['',null].includes(this.archivos.cArchivoBases)"
+                                        label="{{this.archivos.cArchivoBases.replace('storage/inv/convocatorias/','')}}"
+                                        class="ui-button-rounded ui-button-danger" icon="pi pi-file-pdf"
+                                        (click)="mostrarPDF(modalPDF, this.archivos.cArchivoBases)"
+                                ></button>
+                                <global-file-upload formControlName="cArchivoBases"
+                                                    [extensionesPermitidas]="['pdf']"></global-file-upload>
+                                <app-ht-form-errors
+                                    [control]="frmConvocatoriaControl.cArchivoBases"></app-ht-form-errors>
+                            </div>
+                            <div class="col-sm-12 mb-3">
+                                <label>Cronograma de la Convocatoria / Publicación</label>
+                                <br><label *ngIf="!['',null].includes(this.archivos.cArchivoCronograma)">Archivo
+                                Guardado: </label>
+                                <button pButton type="button" *ngIf="!['',null].includes(this.archivos.cArchivoCronograma)"
+                                        label="{{this.archivos.cArchivoCronograma.replace('storage/inv/convocatorias/','')}}"
+                                        class="ui-button-rounded ui-button-danger" icon="pi pi-file-pdf"
+                                        (click)="mostrarPDF(modalPDF, this.archivos.cArchivoCronograma)"
+                                ></button>
+                                <global-file-upload formControlName="cArchivoCronograma"
+                                                    [extensionesPermitidas]="['pdf']"></global-file-upload>
+                                <app-ht-form-errors
+                                    [control]="frmConvocatoriaControl.cArchivoCronograma"></app-ht-form-errors>
+                            </div>
+                            <div class="col-sm-12 mb-3">
+                                <label>Formatos de la Convocatoria / Publicación </label>
+                                <br><label *ngIf="!['',null].includes(this.archivos.cArchivoFormato)">Archivo
+                                Guardado: </label>
+                                <button pButton type="button" *ngIf="!['',null].includes(this.archivos.cArchivoFormato)"
+                                        label="{{this.archivos.cArchivoFormato.replace('storage/inv/convocatorias/','')}}"
+                                        class="ui-button-rounded ui-button-danger" icon="pi pi-file-pdf"
+                                        (click)="mostrarPDF(modalPDF, this.archivos.cArchivoFormato)"
+                                ></button>
+                                <global-file-upload formControlName="cArchivoFormato"
+                                                    [extensionesPermitidas]="['pdf']"></global-file-upload>
+                                <app-ht-form-errors
+                                    [control]="frmConvocatoriaControl.cArchivoFormato"></app-ht-form-errors>
+                            </div>
+                            <div class="col-sm-12 mb-3">
+                                <label>Resultado de la etapa de evaluación de expediente </label>
+                                <br><label *ngIf="!['',null].includes(this.archivos.cArchivoResEvalExp)">Archivo
+                                Guardado: </label>
+                                <button pButton type="button" *ngIf="!['',null].includes(this.archivos.cArchivoResEvalExp)"
+                                        label="{{this.archivos.cArchivoResEvalExp.replace('storage/inv/convocatorias/','')}}"
+                                        class="ui-button-rounded ui-button-danger" icon="pi pi-file-pdf"
+                                        (click)="mostrarPDF(modalPDF, this.archivos.cArchivoResEvalExp)"
+                                ></button>
+                                <global-file-upload formControlName="cArchivoResEvalExp"
+                                                    [extensionesPermitidas]="['pdf']"></global-file-upload>
+                                <app-ht-form-errors
+                                    [control]="frmConvocatoriaControl.cArchivoResEvalExp"></app-ht-form-errors>
+                            </div>
+                            <div class="col-sm-12 mb-3">
+                                <label>Rectificación de resultado de la etapa de evaluación de expediente</label>
+                                <br><label *ngIf="!['',null].includes(this.archivos.cArchivoRectResEvaExp)">Archivo
+                                Guardado: </label>
+                                <button pButton type="button" *ngIf="!['',null].includes(this.archivos.cArchivoRectResEvaExp)"
+                                        label="{{this.archivos.cArchivoRectResEvaExp.replace('storage/inv/convocatorias/','')}}"
+                                        class="ui-button-rounded ui-button-danger" icon="pi pi-file-pdf"
+                                        (click)="mostrarPDF(modalPDF, this.archivos.cArchivoRectResEvaExp)"
+                                ></button>
+                                <global-file-upload formControlName="cArchivoRectResEvaExp"
+                                                    [extensionesPermitidas]="['pdf']"></global-file-upload>
+                                <app-ht-form-errors
+                                    [control]="frmConvocatoriaControl.cArchivoRectResEvaExp"></app-ht-form-errors>
+                            </div>
+                            <div class="col-sm-12 mb-3">
+                                <label>Resultado de la etapa de evaluación técnico científico </label>
+                                <br><label *ngIf="!['',null].includes(this.archivos.cArchivoResEvTec)">Archivo
+                                Guardado: </label>
+                                <button pButton type="button" *ngIf="!['',null].includes(this.archivos.cArchivoResEvTec)"
+                                        label="{{this.archivos.cArchivoResEvTec.replace('storage/inv/convocatorias/','')}}"
+                                        class="ui-button-rounded ui-button-danger" icon="pi pi-file-pdf"
+                                        (click)="mostrarPDF(modalPDF, this.archivos.cArchivoResEvTec)"
+                                ></button>
+                                <global-file-upload formControlName="cArchivoResEvTec"
+                                                    [extensionesPermitidas]="['pdf']"></global-file-upload>
+                                <app-ht-form-errors
+                                    [control]="frmConvocatoriaControl.cArchivoResEvTec"></app-ht-form-errors>
+                            </div>
+                            <div class="col-sm-12 mb-3">
+                                <label>Rectificación de resultados de la etapa de evaluación técnico científico </label>
+                                <br><label *ngIf="!['',null].includes(this.archivos.cArchivoRecResEvaTec)">Archivo
+                                Guardado: </label>
+                                <button pButton type="button" *ngIf="!['',null].includes(this.archivos.cArchivoRecResEvaTec)"
+                                        label="{{this.archivos.cArchivoRecResEvaTec.replace('storage/inv/convocatorias/','')}}"
+                                        class="ui-button-rounded ui-button-danger" icon="pi pi-file-pdf"
+                                        (click)="mostrarPDF(modalPDF, this.archivos.cArchivoRecResEvaTec)"
+                                ></button>
+                                <global-file-upload formControlName="cArchivoRecResEvaTec"
+                                                    [extensionesPermitidas]="['pdf']"></global-file-upload>
+                                <app-ht-form-errors
+                                    [control]="frmConvocatoriaControl.cArchivoRecResEvaTec"></app-ht-form-errors>
+                            </div>
+                            <div class="col-sm-12 mb-3">
+                                <label>Resultado final </label>
+                                <br><label *ngIf="!['',null].includes(this.archivos.cArchivoResFinal)">Archivo
+                                Guardado: </label>
+                                <button pButton type="button" *ngIf="!['',null].includes(this.archivos.cArchivoResFinal)"
+                                        label="{{this.archivos.cArchivoResFinal.replace('storage/inv/convocatorias/','')}}"
+                                        class="ui-button-rounded ui-button-danger" icon="pi pi-file-pdf"
+                                        (click)="mostrarPDF(modalPDF, this.archivos.cArchivoResFinal)"
+                                ></button>
+                                <global-file-upload formControlName="cArchivoResFinal"
+                                                    [extensionesPermitidas]="['pdf']"></global-file-upload>
+                                <app-ht-form-errors
+                                    [control]="frmConvocatoriaControl.cArchivoResFinal"></app-ht-form-errors>
+                            </div>
+                        </p-panel>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button pButton type="button" label="Guardar" class="ui-button-raised"
+                    (click)="enviarFormulario('mantenimiento_convocatoria')"></button>
+            <button pButton type="button" label="Cancelar"
+                    class="ui-button-raised ui-button-warning"
+                    (click)="modal.dismiss('cancel'); limpiarFormulario();"></button>
+        </div>
+    </form>
+
+</ng-template>
+
+<ng-template #modalPDF let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Documento la Convocatoria</h4>
+        <button type="button" class="close" aria-label="Close button" aria-describedby="modal-title"
+                (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body row">
+        <div class="col-md-12 justify-content-center align-items-center">
+            <global-embed-pdf class="pdf_viewer" [src]="pdfActual"></global-embed-pdf>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary btn-rounded"
+                (click)="modal.dismiss('cancel'); cerrarPDF();">Salir
+        </button>
+    </div>
+</ng-template>

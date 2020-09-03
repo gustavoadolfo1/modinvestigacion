@@ -1,0 +1,5 @@
+<div class="btn-group" role="group" aria-label="---">
+    <button *ngFor="let lnk of navSelected.sub" class="btn btn-md btn-outline-primary" [class.active]="lnk.active" [routerLink]="lnk.state">
+        <i *ngIf="lnk.icon" [class]="'nav-icon '+ lnk.icon "></i> {{lnk.name}}
+    </button>
+</div>

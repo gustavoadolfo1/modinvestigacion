@@ -1,0 +1,160 @@
+<ch-menu [_activeIndex]="this.activeIndex"></ch-menu>
+
+
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card mb-4">
+
+            <div class="card-header bg-primary text-white text-center">
+                PROGRAMACIÓN TÉCNICA MENSUAL
+            </div>
+
+            <div class="card-body">
+                <div class="col-md-12 mb-2">
+                    <div class="row">
+                        <ng-container *ngIf="(this.perfilActual == perfilesDeUsuarios.oficina)">
+                            <div class="col-lg-12" align="center">
+                                <ch-requisito></ch-requisito>
+                            </div>
+                        </ng-container>
+                        <div class="col-md-12 mb-2">
+                            <ng-container
+                                *ngIf="dataExtraProyecto.objEspecifico.length > 0">
+
+                                <p-toast [style]="{marginTop: '80px'}"></p-toast>
+
+                                <p-accordion>
+                                    <ng-container
+                                        *ngFor="let objEsp of dataExtraProyecto.objEspecifico; let i = index">
+                                        <p-accordionTab
+                                            header="{{ (objEsp.iTipoObjetivoId=='1' ? 'Obj. General: ' : 'Componente '+i+' /Objetivo Específico: ') + objEsp.cObjetivo }}">
+
+                                            <div class="col-sm-12 table-responsive">
+                                                <table class="table table-hover table-bordered table-sm "
+                                                       *ngIf="objEsp.iTipoObjetivoId=='2'">
+                                                    <thead class="thead-dark">
+                                                    <tr class="text-center">
+                                                        <th rowspan="2" width="3px">
+                                                            <button pButton type="button"
+                                                                    class="ui-button-raised ui-button-info"
+                                                                    icon="pi pi-plus"
+                                                                    (click)="agregarActividad(i)"></button>
+                                                        </th>
+                                                        <th rowspan="2">Actividades</th>
+                                                        <th colspan="2">Meta Física</th>
+                                                        <th [colSpan]="this.iNumMesesProyecto">Cronograma</th>
+                                                    </tr>
+                                                    <tr class="text-center">
+                                                        <th width="80px">Cantidad</th>
+                                                        <th width="100px">Unidad de Medida</th>
+                                                        <th width="5px"
+                                                            *ngFor="let lmes of listaMeses.numMes; let w = index">M{{ w + 1 }}</th>
+
+                                                    </tr>
+                                                    </thead>
+
+
+                                                    <tbody>
+                                                    <tr *ngFor="let actividad of objEsp.actividad; let y = index"
+                                                        (click)="modelos.sel_en_lista_act = y"
+                                                        [class.table-warning]="((modelos.sel_en_lista_act != null) && (modelos.sel_en_lista_act == y))">
+                                                        <td class="text-center">
+                                                            <button pButton type="button"
+                                                                    class="ui-button-raised ui-button-danger"
+                                                                    icon="pi pi-times"
+                                                                    (click)="eliminarActividad(i, y)"></button>
+                                                        </td>
+                                                        <td>
+                                                            <textarea class="form-control form-control-sm"
+                                                                      [class.is-invalid]="actividad.cActividadDescripcion==null || actividad.cActividadDescripcion==''"
+                                                                      [(ngModel)]="actividad.cActividadDescripcion"
+                                                                      (change)="mayusculaActividad(actividad, $event.target.value.toUpperCase())"
+                                                            ></textarea>
+                                                        </td>
+                                                        <td align="center">
+                                                            <input type="number"
+                                                                   [(ngModel)]="actividad.iCantidad" name="iCantidad"
+                                                                   min=0 max=100 number [range]="[0, 100]" [min]="0"
+                                                                   [max]="100"
+                                                                   #iCantidad="ngModel"
+                                                                   class="form-control form-control-sm"
+                                                                   [class.is-invalid]="actividad.iCantidad==null || actividad.iCantidad==''">
+                                                        </td>
+                                                        <td>
+                                                            <input type="text"
+                                                                   [(ngModel)]="actividad.cUnidadMedida" name="cUnidadMedida"
+                                                                   #cUnidadMedida="ngModel"
+                                                                   class="form-control form-control-sm"
+                                                                   (change)="mayusculaUnidad(actividad, $event.target.value.toUpperCase())"
+                                                                   [class.is-invalid]="actividad.cUnidadMedida==null || actividad.cUnidadMedida==''">
+                                                        </td>
+                                                        <td *ngFor="let cro of actividad.cronograma; let z = index"
+                                                            align="center"  class="{{actividad.cronograma[z].iEstado==true ? 'mes-check' : ''}}"
+                                                            >
+                                                            <input type="checkbox"
+                                                                   [(ngModel)]="actividad.cronograma[z].iEstado">
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+
+                                                <table class="table table-hover table-bordered table-sm ">
+                                                    <thead class="thead-dark">
+                                                    <tr class="text-center">
+                                                        <th width="5px">
+                                                            <button pButton type="button"
+                                                                    class="ui-button-raised ui-button-info"
+                                                                    icon="pi pi-plus"
+                                                                    (click)="agregarIndicador(i)"></button>
+                                                        </th>
+                                                        <th width="80px">Meta</th>
+                                                        <th>{{ (objEsp.iTipoObjetivoId == '1' ? 'Indicadores de Propósito' : 'Indicadores de Producto') }}</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr *ngFor="let indicador of objEsp.indicador; let x = index"
+                                                        (click)="modelos.sel_en_lista_ind = x"
+                                                        [class.table-warning]="((modelos.sel_en_lista_ind != null) && (modelos.sel_en_lista_ind == x))">
+                                                        <td class="text-center">
+                                                            <button pButton type="button"
+                                                                    class="ui-button-raised ui-button-danger"
+                                                                    icon="pi pi-times"
+                                                                    (click)="eliminarIndicador(i, x)"></button>
+                                                        </td>
+                                                        <td align="center">
+                                                            <input type="number"
+                                                                   [(ngModel)]="indicador.iMeta"
+                                                                   min=0 max=100 number [range]="[0, 100]" [min]="0"
+                                                                   [max]="100"
+                                                                   class="form-control form-control-sm"
+                                                                   [class.is-invalid]="indicador.iMeta==null || indicador.iMeta==''"
+                                                                   #iMeta="ngModel">
+                                                        </td>
+                                                        <td>
+                                                            <textarea class="form-control form-control-sm"
+                                                                      [class.is-invalid]="indicador.cIndicador==null || indicador.cIndicador==''"
+                                                                      [(ngModel)]="indicador.cIndicador"
+                                                                      (change)="mayusculaIndicador(indicador, $event.target.value.toUpperCase())"
+                                                            ></textarea>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </p-accordionTab>
+                                    </ng-container>
+                                </p-accordion>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button pButton type="button" label="Guardar" class="ui-button-raised" (click)="guardarProgTec()"></button>
+                <button pButton type="button" label="Cancelar" class="ui-button-raised ui-button-warning" (click)="cancelar()"></button>
+            </div>
+
+        </div>
+    </div>
+</div>

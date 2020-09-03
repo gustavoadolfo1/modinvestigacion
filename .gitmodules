@@ -1,0 +1,3 @@
+[submodule "src/app/global"]
+	path = src/app/global
+	url = git@gitlab.com:unamsegeun/global-angular.git

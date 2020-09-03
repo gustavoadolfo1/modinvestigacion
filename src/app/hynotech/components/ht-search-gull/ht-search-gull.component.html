@@ -1,0 +1,59 @@
+<div class="search-ui rtl-ps-none" perfectScrollbar [@animate]="{value:'*',params:{y:'120px',opacity:'0',delay:'100ms', duration: '400ms'}}">
+    <div class="search-header">
+        <img src="./assets/images/logo.png" alt="" class="logo">
+        <button class="btn btn-icon bg-transparent float-right mt-2" (click)="searchService.abrirBusqueda = false">
+            <i class="i-Close-Window text-22 text-muted"></i>
+        </button>
+    </div>
+    <div class="row">
+        <div class="col-lg-9">
+            <input #txtBusqueda type="text" placeholder="Escriba aquí..." class="search-input" style="font-size: 2rem; width: 100%;" (keyup.escape)="searchService.abrirBusqueda = false" [formControl]="searchCtrl" autofocus>
+        </div>
+        <div class="col-lg-3">
+            <ng-content select="botones"></ng-content>
+        </div>
+    </div>
+
+    <div class="search-title">
+        <span class="text-muted">Resultados de Busqueda</span>
+    </div>
+
+    <ng-content select="resultados"></ng-content>
+
+    <div class="search-results list-horizontal">
+        <div *ngFor="let item of results$ | async | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index;"
+             class="list-item col-md-12 p-0"
+             [@animate]="{value:'*',params:{delay: (i*100)+'ms', y:'50px'}}"
+        >
+            <div class="card o-hidden flex-row mb-4 d-flex">
+                <div class="list-thumb d-flex">
+                    <!-- TUMBNAIL -->
+                    <img [src]="imgsDomain + item.iPersId" alt="">
+                </div>
+                <div class="flex-grow-1 pl-2 d-flex">
+                    <div class="card-body align-self-center d-flex flex-column justify-content-between align-items-lg-center flex-lg-row">
+                        <!-- OTHER DATA -->
+                        <div (click)="seleccionarItem(item)" href="" class="w-40 w-sm-100">
+                            <div class="item-title">{{item.cPersDescripcion}}</div>
+                        </div>
+                        <p class="m-0 text-muted text-small w-15 w-sm-100">{{item.cTipoPersDescripcion}}</p>
+                        <p class="m-0 text-muted text-small w-15 w-sm-100">{{item.cTipoIdentSigla}} {{item.cPersDocumento}}</p>
+                        <p class="m-0 text-muted text-small w-15 w-sm-100 d-none d-lg-block item-badges">
+                            <span class="badge badge-outline-{{item?.badge?.color}}">{{item?.badge?.text}}</span>
+                        </p>
+                    </div>
+                </div>
+                <div class=" align-self-center m-3" role="group" aria-label="---">
+                    <button class="btn btn-sm btn-outline-primary" (click)="seleccionarItem(item)">
+                        <app-ht-font-awesome name="eye" size="2x"></app-ht-font-awesome>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- PAGINATION CONTROL -->
+    <div class="col-md-12 mt-3" *ngIf="results$ | async">
+        <pagination-controls (pageChange)="page = $event" previousLabel="" nextLabel=""></pagination-controls>
+    </div>
+</div>

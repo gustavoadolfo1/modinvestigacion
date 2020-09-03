@@ -1,0 +1,15 @@
+<div *ngIf="control.errors">
+    <small *ngIf="control.errors.required" class="form-text text-danger">Este campo es requerido</small>
+    <small *ngIf="control.errors.minlength" class="form-text text-danger">Se require un minimo de {{control.errors.minlength.requiredLength}} caracteres</small>
+    <small *ngIf="control.errors.min" class="form-text text-danger">No se cumple el valor minimo especificado</small>
+    <small *ngIf="control.errors.email" class="form-text text-danger">No se cumple con el formato de Correo Electrónico</small>
+    <small *ngIf="control.errors.data_existe != null" class="form-text text-danger">{{control.errors.data_existe}}</small>
+
+    <small *ngIf="control.errors.hasNumber" class="form-text text-danger">Se requiere al menos un numero</small>
+    <small *ngIf="control.errors.hasCapitalCase" class="form-text text-danger">Se requiere al menos una mayúscula</small>
+    <small *ngIf="control.errors.hasSmallCase" class="form-text text-danger">Se requiere al menos una minúscula</small>
+    <small *ngIf="control.errors.hasSpecialCharacters" class="form-text text-danger">Se requiere al menos un carácter especial</small>
+
+    <small *ngIf="control.errors.NoPassswordMatch" class="form-text text-danger">La contraseña no coincide</small>
+</div>
+

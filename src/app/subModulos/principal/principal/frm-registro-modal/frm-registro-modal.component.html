@@ -1,0 +1,688 @@
+<div [style.visibility]="isVisibleDiv ? 'visible' : 'hidden'">
+    <div class="modal-header ht-modal-header">
+        <h4 class="modal-title" id="modalRegistroTitulo1" *ngIf="!customTitle">
+            {{ titulo }} - {{ _dataService.getOption().ofSeleccionada.cDepenNombre }}
+        </h4>
+        <h4 class="modal-title" id="modalRegistroTitulo" *ngIf="customTitle">
+            {{customTitle}}
+        </h4>
+        <button type="button" class="close" aria-label="Cerrar" (click)="activeModal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!---------------------------------------formulario para guardar proyecto--------------------------------------->
+    <form [formGroup]="frmRegistro" (keydown.enter)="$event.preventDefault()" (ngSubmit)="accionesProyecto('guardar')">
+        <div class="modal-body row" style="margin: 0 2px;">
+
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-12 form-group mb-2">
+                        <label>Convocatoria</label>
+                        <ng-select [items]="dataServidor.listaConvocatoria"
+                                   [virtualScroll]="true"
+                                   [loading]="loading"
+                                   bindLabel="cConvocatoria"
+                                   bindValue="iConvocatoriaId"
+                                   placeholder="Seleccionar..."
+                                   formControlName="idConvocatoria"
+                                   class="frm-peque"
+                                   [clearable]="false"
+                        >
+                        </ng-select>
+                        <app-ht-form-errors [control]="frmRegistroControl.idConvocatoria"></app-ht-form-errors>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group mb-2">
+                        <label>Carrera Profesional</label>
+                        <ng-select [items]="dataServidor.listaCarreras"
+                                   [virtualScroll]="true"
+                                   [loading]="loading"
+                                   bindLabel="cCarreraDsc"
+                                   bindValue="iCarreraId"
+                                   placeholder="Seleccionar..."
+                                   formControlName="idCarrera"
+                                   class="frm-peque"
+                                   [clearable]="false"
+
+                        >
+                        </ng-select>
+                        <app-ht-form-errors [control]="frmRegistroControl.idCarrera"></app-ht-form-errors>
+                    </div>
+
+                    <div class="col-md-6 form-group mb-2">
+                        <label>Linea de Investigación</label>
+                        <ng-select [items]="dataServidor.listaLineasInvestigacion"
+                                   [virtualScroll]="true"
+                                   [loading]="loading"
+                                   bindLabel="cLineaInvDescripcion"
+                                   bindValue="iLineaInvestigacionId"
+                                   placeholder="Seleccionar..."
+                                   formControlName="idLineaInvestigacion"
+                                   class="frm-peque"
+                                   [clearable]="false">
+                        </ng-select>
+                        <app-ht-form-errors [control]="frmRegistroControl.idLineaInvestigacion"></app-ht-form-errors>
+                    </div>
+
+
+                    <div class="col-md-6 form-group mb-2">
+                        <label>Tipo de Proyecto</label>
+                        <ng-select [items]="dataServidor.listaTipoProyecto"
+                                   [virtualScroll]="true"
+                                   [loading]="loading"
+                                   bindLabel="cTipoProyDescripcion"
+                                   bindValue="iTipoProyectoId"
+                                   placeholder="Seleccionar..."
+                                   formControlName="idTipoProyecto"
+                                   class="frm-peque"
+                                   [clearable]="false"
+                        >
+                        </ng-select>
+                        <app-ht-form-errors [control]="frmRegistroControl.idTipoProyecto"></app-ht-form-errors>
+                    </div>
+
+                    <div class="col-md-6 form-group mb-2">
+                        <label>Estado de Proyecto</label>
+                        <ng-select [items]="dataServidor.listaEstadoProyecto"
+                                   [virtualScroll]="true"
+                                   [loading]="loading"
+                                   bindLabel="cEstadoProyDescripcion"
+                                   bindValue="iEstadoProyectoId"
+                                   placeholder="Seleccionar..."
+                                   formControlName="idEstadoProyecto"
+                                   class="frm-peque"
+                                   [clearable]="false"
+                        >
+                        </ng-select>
+                        <app-ht-form-errors [control]="frmRegistroControl.idEstadoProyecto"></app-ht-form-errors>
+                    </div>
+
+                    <div class="col-md-6 form-group mb-2">
+                        <label>Fuente de Financiamiento</label>
+                        <ng-select [items]="dataServidor.listaFuenteProyecto"
+                                   [virtualScroll]="true"
+                                   [loading]="loading"
+                                   bindLabel="cFuenteProyDescripcion"
+                                   bindValue="iFuenteProyectoId"
+                                   placeholder="Seleccionar..."
+                                   formControlName="idFuenteProyecto"
+                                   class="frm-peque"
+                                   [clearable]="false"
+                        >
+                        </ng-select>
+                        <app-ht-form-errors [control]="frmRegistroControl.idFuenteProyecto"></app-ht-form-errors>
+                    </div>
+
+                    <div class="col-md-6 form-group mb-2" *ngIf="this.tipoUsuario == undefined">
+                        <label>Resol. de Aprobación</label>
+                        <input type="text" class="form-control form-control-sm" formControlName="resolucionProyecto"
+                               [class.is-invalid]="!frmRegistroControl.resolucionProyecto.valid"
+                               placeholder="Resolución">
+                        <app-ht-form-errors [control]="frmRegistroControl.resolucionProyecto"></app-ht-form-errors>
+                    </div>
+
+                    <div class="col-md-4 form-group mb-2">
+                        <label>Año en que se aprueba</label>
+                        <ng-select [items]="dataServidor.listaAnyoAprobado"
+                                   [virtualScroll]="true"
+                                   [loading]="loading"
+                                   bindLabel="iYearId"
+                                   bindValue="iYearId"
+                                   placeholder="Seleccionar..."
+                                   formControlName="idAnyoAprobado"
+                                   class="frm-peque"
+                                   [clearable]="false"
+                        >
+                        </ng-select>
+                        <app-ht-form-errors [control]="frmRegistroControl.idAnyoAprobado"></app-ht-form-errors>
+                    </div>
+
+                    <div class="col-md-6 form-group mb-2">
+                        <label>Presupuesto del Proyecto</label>
+                        <input type="text" class="form-control form-control-sm" formControlName="presupuestoProyecto"
+                               [class.is-invalid]="!frmRegistroControl.presupuestoProyecto.valid"
+                               placeholder="Presupuesto">
+                        <app-ht-form-errors [control]="frmRegistroControl.presupuestoProyecto"></app-ht-form-errors>
+                    </div>
+
+
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 mb-3">
+                        <label>Archivo del Proyecto</label>
+                        <global-file-upload formControlName="archivoProyecto"
+                                            [extensionesPermitidas]="['pdf']"></global-file-upload>
+                        <app-ht-form-errors
+                            [control]="frmRegistroControl.archivoProyecto"></app-ht-form-errors>
+                    </div>
+                </div>
+
+
+            </div> <!--col-md-8 -->
+
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-12 form-group mb-2">
+                        <label>Nombre del Proyecto</label>
+                        <textarea formControlName="nombreProyecto" class="form-control"
+                                  [class.is-invalid]="!frmRegistroControl.nombreProyecto.valid"
+                        ></textarea>
+                        <app-ht-form-errors [control]="frmRegistroControl.nombreProyecto"></app-ht-form-errors>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 form-group mb-2">
+                        <label>Objetivo General</label>
+                        <textarea formControlName="objetivoGeneral" class="form-control"
+                                  [class.is-invalid]="!frmRegistroControl.objetivoGeneral.valid"
+                        ></textarea>
+                        <app-ht-form-errors [control]="frmRegistroControl.objetivoGeneral"></app-ht-form-errors>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 form-group mb-2">
+                        <label>Objetivo Especifico</label>
+                        <input type="text" class="form-control form-control-sm" formControlName="objetivoEspecifico"
+                               (keyup.enter)="agregarObjEspecifico()"
+                               placeholder="Objetivo Especifico">
+                        <input type="hidden" class="form-control form-control-sm" formControlName="countObjEspecifico">
+                        <app-ht-form-errors [control]="frmRegistroControl.countObjEspecifico"></app-ht-form-errors>
+
+                            <button class="btn btn-outline-secondary btn-sm" type="button"
+                                    [disabled]="frmRegistroControl.concepto.value && (dataExtraProyecto.objEspecifico.length > 0)"
+                                    (click)="agregarObjEspecifico()">
+                                <i class="icon-regular i-Add"></i> Añadir
+                            </button>
+
+                    </div>
+                    <div class="col-md-12 mb-2">
+                        <ng-container
+                            *ngIf="dataExtraProyecto.objEspecifico.length > 0 || (!dataRecibido || dataRecibido.objEspecifo.length > 0)">
+                            <div class="list-group">
+                                <ng-container *ngFor="let objEsp of dataExtraProyecto.objEspecifico; let i = index">
+                                    <div
+                                        (click)="(frmRegistroControl.concepto.value && (dataExtraProyecto.miembros.length > 0)) ? '' : abrirModalObjEsp(modalAgregarObjEspecifico, false, i)"
+                                        class="list-group-item list-group-item-action flex-column align-items-start"
+                                        data-toggle="list">
+                                        <p class="mb-0">{{ objEsp.cObjetivo }}</p>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ng-container>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 form-group mb-2">
+                        <label>Observación</label>
+                        <textarea formControlName="observacionProyecto" class="form-control"
+                                  [class.is-invalid]="!frmRegistroControl.observacionProyecto.valid"
+                        ></textarea>
+                        <app-ht-form-errors [control]="frmRegistroControl.observacionProyecto"></app-ht-form-errors>
+                    </div>
+                </div>
+
+
+            </div><!--col-md-5 -->
+
+            <!---------------------------------------------abre formulario de miebro y muestra al miembro
+                guardado de la tabla persona tambien se puede editar o eliminar clicando en el boton-------------------------------------------------------------------->
+
+
+            <div class="row">
+                <div class="col-md-10 form-group mb-2">
+                    <label>Miembro </label>
+                    <div class="col-md-2 form-group mb-2">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary btn-sm" type="button"
+                                    [disabled]="frmRegistroControl.concepto.value && (dataExtraProyecto.miembros.length > 0)"
+                                    (click)="abrirModal(modalAgregarMiembros)">
+                                <i class="icon-regular i-Add-User"></i> Añadir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <ng-container
+                        *ngIf="dataExtraProyecto.miembros.length > 0 || (!dataRecibido || dataRecibido.miembros.length > 0)">
+
+                        <div class="list-group">
+                            <ng-container *ngFor="let miemb of dataExtraProyecto.miembros; let i = index">
+                                <div
+                                    (click)="(frmRegistroControl.concepto.value && (dataExtraProyecto.miembros.length > 0)) ? '' : abrirModal(modalAgregarMiembros, false, i)"
+                                    class="list-group-item list-group-item-action flex-column align-items-start"
+                                    data-toggle="list">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ miemb.txtNomApeMiembro }}</h5>
+                                    </div>
+                                    <p class="mb-1">{{ miemb.txtTipoMiembro }}</p>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </ng-container>
+                </div>
+
+
+            </div>
+
+            <!----------------------------------------------------------------------------------------------------------->
+
+        </div><!--row -->
+
+
+        <!------------------------------------------botones de formulario de proyecto---------------->
+
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('cancel')">Cancelar
+            </button>
+            <button class="btn btn-secondary" type="reset">Reestablecer</button>
+            <button class="btn primary" type="submit"
+                    [disabled]="(!frmRegistro.valid || enviandoFormulario)"
+            >
+                Registrar
+            </button>
+        </div>
+    </form>
+</div>
+
+
+<!-------------------------------------tabla de miembros---------------------------------------------------------->
+
+<ng-template #modalPersona let-modal>
+    <div class="modal-body row" style="margin: 2px;">
+        <div class="col-sm-3" *ngIf="tipoPersModal == 1">
+            <div class="sidebar">
+                <div class="widget mb-3">
+                    <div class="user-photo">
+                        <img class="rounded mx-auto d-block"
+                             [src]=""
+                             alt="User Photo">
+                    </div><!-- /.user-photo -->
+                </div><!-- /.widget -->
+            </div><!-- /.sidebar -->
+        </div><!-- /.col-* -->
+
+        <div class="col-sm-{{tipoPersModal ==1? '9' : '12'}}">
+            <div class="content">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Tipo</th>
+                        <th scope="col">N° Documento</th>
+                        <th scope="col">Datos</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let regPer of dataServidor.listaMiembros | paginate: { itemsPerPage: 25, currentPage: p }; let i = index"
+                        (dblclick)="modal.close('seleccionar')"
+                        (click)="seleccionarMiembro(regPer, i);"
+                        [class.table-active]="i == pers_seleccionada.i"
+                    >
+                        <th scope="row">{{i + 1}}</th>
+                        <td>{{ regPer.cTipoPersDescripcion }}</td>
+                        <td>{{ regPer.cTipoIdentSigla }} {{ regPer.cPersDocumento }}</td>
+                        <td>{{ regPer.cPersDescripcion }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <pagination-controls (pageChange)="p = $event" previousLabel="Anterior"
+                                     nextLabel="Siguiente"></pagination-controls>
+            </div><!-- /.content -->
+        </div><!-- /.col-* -->
+
+
+    </div>
+
+    <!----------------------------------nuevo miembro--------------------------------------------------------------------->
+    <div class="modal-footer">
+        <button class="btn btn-success" type="button" (click)="llamarAccion(['nuevo_persona', modalPersonaEdit])">
+            <app-ht-font-awesome name="plus"></app-ht-font-awesome>
+            Nuevo
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">Cancela</button>
+        <!--      <button type="button" ngbAutofocus class="btn btn-danger btn-rounded" (click)="modal.close('aceptar')">Aceptar</button>-->
+        <btn-loading btnClass="btn-primary btn" (click)="modal.close('seleccionar')">Seleccionar</btn-loading>
+    </div>
+</ng-template>
+
+
+<!--------------------------------agregar miembro formulario registro grande----------------------------------------------------------------->
+<ng-template #modalPersonaEdit let-modal>
+    <div class="modal-body row" style="margin: 2px;">
+        <div class="col-sm-12">
+            <div class="content">
+                <form [formGroup]="frmPersona" (ngSubmit)="enviarFormulario('mantenimiento_persona')">
+                    <div class="page-title">
+                        <h1>Editar Perfil Persona</h1>
+                    </div><!-- /.page-title -->
+
+                    <div class="p20 mb30">
+                        <h3 class="page-title">Identificacion</h3>
+                        <div class="row">
+                            <div class="form-group col-sm-6" *ngIf="!frmPersonaControl.idTipoPersona.value">
+                                <label>Tipo Persona</label>
+                                <select class="form-control" formControlName="idTipoPersona">
+                                    <option *ngFor="let dat of dataServidor.tipoPersonas"
+                                            [value]="dat.iTipoPersId">{{dat.cTipoPersDescripcion}}</option>
+                                </select>
+                                <app-ht-form-errors
+                                    [control]="frmPersonaControl.idTipoPersona"></app-ht-form-errors>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label>Tipo Documento Identidad</label>
+                                <select class="form-control" formControlName="idTipoIdentidad">
+                                    <option *ngFor="let dat of dataServidor.tipoIdentificacion"
+                                            [value]="dat.iTipoIdentId">{{dat.cTipoIdentDescripcion}}</option>
+                                </select>
+                                <app-ht-form-errors
+                                    [control]="frmPersonaControl.idTipoIdentidad"></app-ht-form-errors>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label>Número de Documento Identidad</label>
+                                <input type="text" class="form-control" formControlName="numeroDocumento">
+                                <app-ht-form-errors
+                                    [control]="frmPersonaControl.numeroDocumento"></app-ht-form-errors>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p20 mb30" *ngIf="frmPersonaControl.idTipoPersona.value == 1">
+                        <h3 class="page-title">
+                            Datos RENIEC - PIDE <small *ngIf="dataServidor.dataRenic != null">Consultado
+                            el {{dataServidor.dataRenic?.cReniecUser_fecha_hora | date: 'dd/MM/yyyy'}}</small>
+                            <button type="button" class="btn btn-sm btn-outline-primary float-right"
+                                    (click)="llamarAccion(['consultar_reniec'])">
+                                Volver a Consultar
+                            </button>
+                        </h3>
+                        <div class="row">
+                            <div class="form-group col-sm-4 disabled">
+                                <label>Apellido Paterno</label>
+                                <input type="text" class="form-control form-control-sm"
+                                       [ngModel]="dataServidor.dataRenic?.cReniecApel_pate"
+                                       [ngModelOptions]="{standalone: true}" disabled>
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Apellido Materno</label>
+                                <input type="text" class="form-control form-control-sm"
+                                       [ngModel]="dataServidor.dataRenic?.cReniecApel_mate"
+                                       [ngModelOptions]="{standalone: true}" disabled>
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Nombres</label>
+                                <input type="text" class="form-control form-control-sm"
+                                       [ngModel]="dataServidor.dataRenic?.cReniecNombres"
+                                       [ngModelOptions]="{standalone: true}" disabled>
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Ubigeo</label>
+                                <input type="text" class="form-control form-control-sm"
+                                       [ngModel]="dataServidor.dataRenic?.cReniecUbigeo"
+                                       [ngModelOptions]="{standalone: true}" disabled>
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Direccion</label>
+                                <input type="text" class="form-control form-control-sm"
+                                       [ngModel]="dataServidor.dataRenic?.cReniecDireccion"
+                                       [ngModelOptions]="{standalone: true}" disabled>
+                            </div>
+                            <div class="form-group col-sm-4">
+                                <label>Estado Civil</label>
+                                <input type="text" class="form-control form-control-sm"
+                                       [ngModel]="dataServidor.dataRenic?.cReniecEsta_civi"
+                                       [ngModelOptions]="{standalone: true}" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p20 mb30" *ngIf="frmPersonaControl.idTipoPersona.value == 1">
+                        <h3 class="page-title">Persona Natural</h3>
+                        <div class="row">
+                            <div class="form-group col-sm-6">
+                                <label>Apellido Paterno</label>
+                                <input type="text" class="form-control" formControlName="apellidoPaterno">
+                                <app-ht-form-errors
+                                    [control]="frmPersonaControl.apellidoPaterno"></app-ht-form-errors>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label>Apellido Materno</label>
+                                <input type="text" class="form-control" formControlName="apellidoMaterno">
+                                <app-ht-form-errors
+                                    [control]="frmPersonaControl.apellidoMaterno"></app-ht-form-errors>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label>Nombres</label>
+                                <input type="text" class="form-control" formControlName="nombres">
+                                <app-ht-form-errors
+                                    [control]="frmPersonaControl.nombres"></app-ht-form-errors>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label>Sexo</label>
+                                <select class="form-control" formControlName="sexo">
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
+                                </select>
+                                <app-ht-form-errors [control]="frmPersonaControl.sexo"></app-ht-form-errors>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label>Fecha de Nacimiento</label>
+                                <input type="date" class="form-control" formControlName="fechaNacimiento">
+                                <app-ht-form-errors
+                                    [control]="frmPersonaControl.fechaNacimiento"></app-ht-form-errors>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p20 mb30" *ngIf="frmPersonaControl.idTipoPersona.value == 2">
+                        <h3 class="page-title">Persona Juridica</h3>
+                        <div class="row">
+                            <div class="form-group col-sm-6">
+                                <label>Razón Social</label>
+                                <input type="text" class="form-control" formControlName="razonSocial">
+                                <app-ht-form-errors
+                                    [control]="frmPersonaControl.razonSocial"></app-ht-form-errors>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label>Nombre Corto</label>
+                                <input type="text" class="form-control" formControlName="razonSocialCorto">
+                                <app-ht-form-errors
+                                    [control]="frmPersonaControl.razonSocialCorto"></app-ht-form-errors>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label>Sigla</label>
+                                <input type="text" class="form-control" formControlName="razonSocialSigla">
+                                <app-ht-form-errors
+                                    [control]="frmPersonaControl.razonSocialSigla"></app-ht-form-errors>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label>Representante Legal</label>
+                                <input type="text" class="form-control"
+                                       formControlName="representanteLegal">
+                                <app-ht-form-errors
+                                    [control]="frmPersonaControl.representanteLegal"></app-ht-form-errors>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p20 mb30">
+                        <div class="row justify-content-center">
+                            <div class="form-group col-sm-6">
+                                <div class="input-group-append">
+                                    <button class="btn btn-success" type="submit"
+                                            [disabled]="(!frmPersona.valid || enviandoFormulario)"
+                                    >
+                                        <app-ht-font-awesome name="save"></app-ht-font-awesome>
+                                        Guardar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div><!-- /.content -->
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">Cancela</button>
+        <!--      <button type="button" ngbAutofocus class="btn btn-danger btn-rounded" (click)="modal.close('aceptar')">Aceptar</button>-->
+        <btn-loading btnClass="btn-primary btn" (click)="modal.close('seleccionar')">Seleccionar</btn-loading>
+    </div>
+</ng-template>
+
+<!------------------------------------fin formulario de miembro-------------------------------------->
+
+
+<!--------------------------------agregar miembro---------formulario----------------------------------------------------------------------------->
+<ng-template #modalAgregarMiembros let-modal>
+    <form [formGroup]="frmAgregarMiembro" (ngSubmit)="accModalAgregarMiembro('agregar')">
+        <div class="modal-body row" style="margin: 2px;">
+
+            <div class="col-md-12 form-group mb-2 pb-2">
+                <div class="input-group  input-group-sm">
+                    <input type="text" placeholder="Miembro" class="form-control form-control-sm"
+                           formControlName="valBuscMiembro"
+
+                    /> <!-- (keydown.enter)="abrirMiembroModal(1, modalPersona)"-->
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary btn-sm" type="button"
+                                (click)="abrirMiembroModal(1, modalPersona)"
+                        >
+                            <i class="icon-regular i-Find-User"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-md-6 form-group mb-2">
+                <label>Nombres y Apellidos</label>
+                <input type="text" disabled class="form-control form-control-sm" formControlName="txtNomApeMiembro">
+            </div>
+
+            <div class="col-md-6 form-group mb-2">
+                <label>Tipo de Miembro</label>
+                <ng-select [items]="dataServidor.listaTipoMiembro"
+                           [virtualScroll]="true"
+                           [loading]="loading"
+                           bindLabel="cTipoMiembroDescripcion"
+                           bindValue="iTipoMiembroId"
+                           placeholder="Seleccionar..."
+                           formControlName="idTipoMiembro"
+                           class="frm-peque"
+
+                           (change)="cambioSelecTipoMiembro($event)"
+                >
+                </ng-select>
+                <app-ht-form-errors [control]="frmAgregarMiembroControl.idTipoMiembro"></app-ht-form-errors>
+            </div>
+
+
+        </div>
+        <div class="modal-footer">
+            <ng-container *ngIf="editandoMiembro">
+                <button type="button" class="btn btn-danger" (click)="accModalAgregarMiembro('del')">Eliminar</button>
+                <button type="button" class="btn btn-success" (click)="accModalAgregarMiembro('save')">Guardar</button>
+            </ng-container>
+            <ng-container *ngIf="!editandoMiembro">
+                <button type="button" class="btn btn-outline-secondary"
+                        (click)="modal.dismiss('cancel'); frmDestinatario.reset()">Cancela
+                </button>
+                <button type="submit" class="btn btn-outline-primary">Añadir</button>
+                <!--      <button type="button" ngbAutofocus class="btn btn-danger btn-rounded" (click)="modal.close('aceptar')">Aceptar</button>-->
+                <!-- btn-loading btnClass="btn-primary btn" (click)="addModalDestinatario()">Añadir</btn-loading-->
+            </ng-container>
+        </div>
+    </form>
+</ng-template>
+
+
+<!-------------------------------------------------------------------------------------------------------------->
+
+
+<!-- TEMPLATE PARA BUSQUEDA Entidad -->
+<ng-template #botonesBusqueda>
+    <div class="btn-group float-right" role="group" aria-label="---">
+        <button type="button" class="btn btn-sm btn-outline-primary">
+            <app-ht-font-awesome name="plus"></app-ht-font-awesome>
+            Nueva Entidad
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #resultadosBusqueda>
+    <div class="search-results list-horizontal" style="cursor: pointer;">
+        <div
+            *ngFor="let item of listaBusqueda | async | paginate: { itemsPerPage: pageSize, currentPage: page }; let i = index;"
+            class="list-item col-md-12 p-0"
+            [@animate]="{value:'*',params:{delay: (i*100)+'ms', y:'50px'}}"
+        >
+            <div class="card o-hidden flex-row mb-4 d-flex"
+                 (click)="seleccionarResultado(item)"
+            >
+                <div class="list-thumb d-flex">
+                    <!-- TUMBNAIL -->
+                    <img [src]="imgsDomain + item.iPersId" alt="">
+                </div>
+                <div class="flex-grow-1 pl-2 d-flex">
+                    <div
+                        class="card-body align-self-center d-flex flex-column justify-content-between align-items-lg-center flex-lg-row">
+                        <!-- OTHER DATA -->
+                        <div class="w-40 w-sm-100">
+                            <div class="item-title">{{item.cPersDescripcion}}</div>
+                        </div>
+                        <p class="m-0 text-muted text-small w-15 w-sm-100">{{item.cTipoPersDescripcion}}</p>
+                        <p class="m-0 text-muted text-small w-15 w-sm-100">{{item.cTipoIdentSigla}} {{item.cPersDocumento}}</p>
+                        <p class="m-0 text-muted text-small w-15 w-sm-100 d-none d-lg-block item-badges">
+                            <span class="badge badge-outline-{{item?.badge?.color}}">{{item?.badge?.text}}</span>
+                        </p>
+                    </div>
+                </div>
+                <div class=" align-self-center m-3" role="group" aria-label="---">
+                    <button class="btn btn-sm btn-outline-primary">
+                        <app-ht-font-awesome name="eye" size="2x"></app-ht-font-awesome>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- PAGINATION CONTROL -->
+    <div class="col-md-12 mt-3" *ngIf="listaBusqueda | async">
+        <pagination-controls (pageChange)="page = $event" previousLabel="" nextLabel=""></pagination-controls>
+        {{busquedaService.seleccionado|json}}
+    </div>
+</ng-template>
+
+<!--------------------------------agregar obj especifico---------formulario----------------------------------------------------------------------------->
+<ng-template #modalAgregarObjEspecifico let-modal>
+    <form [formGroup]="frmAgregarObjEspecifico" (ngSubmit)="accModalAgregarObjEsp('agregar')">
+        <div class="modal-body row" style="margin: 2px;">
+
+            <div class="col-md-12 form-group mb-2">
+                <label>Objetivo Específico</label>
+                <textarea formControlName="cObjetivo" class="form-control"
+                     ></textarea>
+                <app-ht-form-errors [control]="frmAgregarObjEspecificoControl.cObjetivo"></app-ht-form-errors>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <ng-container *ngIf="editandoObjEsp">
+                <button type="button" class="btn btn-danger" (click)="accModalAgregarObjEsp('del')">Eliminar</button>
+                <button type="button" class="btn btn-success" (click)="accModalAgregarObjEsp('save')">Guardar</button>
+            </ng-container>
+            <ng-container *ngIf="!editandoObjEsp">
+                <button type="button" class="btn btn-outline-secondary"
+                        (click)="modal.dismiss('cancel'); frmDestinatario.reset()">Cancelar
+                </button>
+                <button type="submit" class="btn btn-outline-primary">Añadir</button>
+                <!--      <button type="button" ngbAutofocus class="btn btn-danger btn-rounded" (click)="modal.close('aceptar')">Aceptar</button>-->
+                <!-- btn-loading btnClass="btn-primary btn" (click)="addModalDestinatario()">Añadir</btn-loading-->
+            </ng-container>
+        </div>
+    </form>
+</ng-template>

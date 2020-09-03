@@ -1,0 +1,741 @@
+<div class="list-item">
+    <a routerLink="/investigacion/gestion">
+        <button pButton type="button" icon="pi pi-angle-left" label="Seguir Gestionando Proyecto"></button>
+        <!-- this.router.navigate(['/investigacion/gestion']); -->
+    </a>
+</div>
+
+<div class="separator-breadcrumb border-top"></div>
+
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white text-center">
+                GESTIÓN DE GASTOS
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-2 mb-4">
+                        <b>PROYECTO:</b>
+                    </div>
+                    <div class="col-sm-10 mb-4">
+                        {{ this.nomProyecto }}
+                    </div>
+                    <div class="col-sm-12 mb-3">
+                        <button pButton type="button" label="Seguimiento de Trámite"
+                                icon="pi pi-eye"
+                                class="ui-button-raised ui-button-warning"
+                                (click)="seguimiento(modalSeguimientoTramite)"></button>
+                    </div>
+                    <div class="col-sm-12 table-responsive">
+                        <table class="table table-hover table-bordered table-sm ">
+                            <thead class="thead-dark">
+                            <tr class="text-center">
+                                <th>#</th>
+                                <th>Rubro</th>
+                                <th>Presupuesto</th>
+                                <th>Ejecutado</th>
+                                <th>Saldo</th>
+                                <th>Documento que aprueba</th>
+                                <th width="10px"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <tr *ngFor="let data of dataServidor.mostrarLista ; index as i"
+                                (click)="modelos.sel_en_lista = data"
+                                [class.table-warning]="((modelos.sel_en_lista != null) &&
+                                 (modelos.sel_en_lista.iRubroId == data.iRubroId))">
+                                <td>{{(i + 1)}}</td>
+                                <td>{{data.cRubroDescripcion}}</td>
+                                <td class="text-right">{{data.totalPresupuesto|number:'.2'}}</td>
+                                <td class="text-right">{{data.totalGasto|number:'.2'}}</td>
+                                <td class="text-right">{{data.saldo|number:'.2'}}</td>
+                                <td>{{data.ResProyecto}}</td>
+
+
+                                <td class="text-center">
+                                    <div class="btn-group float-right" role="group" aria-label="---">
+                                        <button pButton type="button"
+                                                *ngIf="[this.perfilesDeUsuarios.oficina, this.perfilesDeUsuarios.integrante].includes(this.perfilActual)"
+                                                class="ui-button-raised ui-button-info"
+                                                icon="pi pi-plus"
+                                                ngbTooltip="Nuevo"
+                                                (click)="llamarAccion(['nuevo', modalGastoProyecto, data])"></button>
+                                        <button pButton type="button"
+                                                class="ui-button-raised ui-button-success"
+                                                icon="pi pi-info"
+                                                ngbTooltip="Detalle"
+                                                (click)="llamarAccion(['detalle', modalGastoProyecto, data])"></button>
+                                    </div>
+                                </td>
+                            </tr>
+
+
+                            <tr *ngFor="let data of dataServidor.mostrarAvancePresupuestal ; index as i">
+                                <td colspan="7">
+                                    <div><b>Presupuesto del Proyecto:</b> S/. {{data.nPresupuestoProyecto}}<br>
+                                        <b>Asignado a Rubros de Gasto:</b> S/. {{data.totalPresupuesto}}<br>
+                                        <b>Presupuesto Disponible:</b> S/. {{data.saldo}}<br>
+                                        <b>Presupuesto Ejecutado:</b> S/. {{ data.totalGasto }} Avance al
+                                        ({{ data.avance }}%)
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                </div>
+
+
+                <div class="row" *ngIf="verDetalle">
+                    <div class="modal-title">
+                        <h5>{{ this.imprimir.detalleTitulo }}</h5>
+                    </div>
+                    <div class="col-sm-12 table-responsive">
+                        <table class="table table-hover table-bordered table-sm ">
+                            <thead class="thead-dark">
+                            <tr class="text-center">
+                                <th>#</th>
+                                <th>Dentro de Fecha</th>
+                                <th>Fecha Programada</th>
+                                <th>Fecha del Gasto</th>
+
+                                <th>Nº Hito</th>
+                                <th>Actividad</th>
+                                <th>Doc Gestión</th>
+                                <th>Proveedor</th>
+                                <th>Nº Doc Gasto</th>
+                                <th>Accion a realizar</th>
+                                <th>Doc Rendicion de cuentas</th>
+                                <th>Importe</th>
+                                <th *ngIf="[this.perfilesDeUsuarios.oficina].includes(this.perfilActual)"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let data of dataServidor.mostrarListaDetalle ; index as i"
+                                (click)="modelos.sel_en_lista = data"
+                                [class.table-warning]="((modelos.sel_en_lista != null) && (modelos.sel_en_lista.iGastoId == data.iGastoId))">
+                                <td>{{(i + 1)}}</td>
+                                <td class="text-center">
+                                    <app-ht-font-awesome name="circle" *ngIf="data.cFueraFecha == 'S' "
+                                                         style="color : red;"></app-ht-font-awesome>
+                                    <app-ht-font-awesome name="circle" *ngIf="data.cFueraFecha !== 'S' "
+                                                         style="color : green;"></app-ht-font-awesome>
+                                </td>
+                                <td class="text-center">{{data.cCaleMes}}/{{data.cCaleAnyo}}</td>
+                                <td class="text-center">{{data.dtGasto|date: 'd/M/yy'}}</td>
+
+                                <td>{{data.iNumeroHito}}</td>
+                                <td>{{data.cActividadDescripcion}}</td>
+                                <td>{{data.cDocAprueba}}</td>
+                                <td>{{data.cPersDocumento}} : {{data.cPersRazonSocialNombre}}</td>
+                                <td>{{data.cTipoDocGasto}}: {{data.cNroDocGasto}}</td>
+                                <td>{{data.cAccion}}</td>
+                                <td>{{data.cDocRend}}</td>
+
+                                <td class="text-right">{{data.nGasto|number: '.2'}}</td>
+
+
+                                <td class="text-center"
+                                    *ngIf="[this.perfilesDeUsuarios.oficina].includes(this.perfilActual)">
+                                    <div class="btn-group float-right" role="group" aria-label="---">
+                                        <button pButton type="button"
+                                                class="ui-button-raised ui-button-secondary"
+                                                icon="pi pi-pencil"
+                                                (click)="llamarAccion(['editar', modalGastoProyecto, data])"></button>
+                                        <button pButton type="button"
+                                                class="ui-button-raised ui-button-danger"
+                                                icon="pi pi-times"
+                                                (click)="llamarAccion(['eliminar', modalGastoProyecto, data])"></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <p-splitButton label="Exportar" icon="pi pi-download" [model]="itemsExp"
+                               styleClass="ui-button-success"></p-splitButton>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #modalGastoProyecto let-modal>
+    <div class="modal-header ht-modal-header">
+        <div class="modal-title">
+            <h4>{{ this.imprimir.modalTitulo }}</h4>
+        </div>
+    </div>
+    <form [formGroup]="frmGastoProyecto">
+        <div class="modal-body row" style="margin: 2px;">
+            <div class="col-sm-12">
+                <div class="row">
+                    <!-- buscador siga  -->
+                    <div class="col-sm-12 mb-3">
+                        <button pButton type="button" label="Seguimiento de Trámite"
+                                icon="pi pi-eye"
+                                class="ui-button-raised ui-button-warning"
+                                (click)="seguimiento(modalSeguimientoTramite)"></button>
+                    </div>
+                    <div class="col-md-12 mb-2">
+                        <p-panel header="Busqueda de Gasto en el SIGA" [toggleable]="true"
+                                 [style]="{'margin-bottom':'20px'}">
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <div class="col-md-4 form-group mb-2 input-group-sm">
+                                        <label>Año</label>
+                                        <select class="form-control" formControlName="anyoSIGA">
+                                            <option *ngFor="let dat of dataServidor.listaAnyoAprobado"
+                                                    [value]="dat.iYearId">{{dat.iYearId }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 form-group mb-2 input-group-sm">
+                                        <label>Tipo B/S</label>
+                                        <select class="form-control" formControlName="tipoBSSIGA">
+                                            <option value="B" selected="selected">Bien</option>
+                                            <option value="S">Servicio</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 form-group mb-2 pb-2">
+                                        <label>N° Pedido</label>
+                                        <div class="input-group  input-group-sm">
+                                            <input type="text" placeholder="N° Pedido"
+                                                   class="form-control form-control-sm"
+                                                   formControlName="valBuscSIGA"
+                                            />
+                                            <!-- (keydown.enter)="abrirMiembroModal(1, modalDatosSIGA)"-->
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary btn-sm" type="button"
+                                                        (click)="abrirModal('SIGA', modalDatosSIGA)"
+                                                >Buscar en SIGA
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="content" *ngIf="PedidoSIGA">
+                                        <table class="table table-bordered table-striped table-hover">
+                                            <thead class="thead-dark">
+                                            <tr>
+                                                <th scope="col">Pedido</th>
+                                                <th scope="col">Fecha Pedido</th>
+                                                <th scope="col">Fecha Orden Adq.</th>
+                                                <th scope="col">N° Orden</th>
+                                                <th scope="col">B/S</th>
+                                                <th scope="col">Documento</th>
+                                                <th scope="col">Estado SIAF</th>
+                                                <th scope="col">Exp SIAF</th>
+                                                <th scope="col">Exp SIGA</th>
+                                                <th scope="col">Total Factura</th>
+                                                <th scope="col"></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr *ngIf="PedidoSIGA">
+                                                <td>{{ PedidoSIGA.NRO_PEDIDO }}</td>
+                                                <td>{{ PedidoSIGA.FECHA_PEDIDO }}</td>
+                                                <td>{{ PedidoSIGA.FECHA_ORDEN_OAD }}</td>
+                                                <td>{{ PedidoSIGA.NRO_ORDEN }}</td>
+                                                <td>{{ PedidoSIGA.NOMBRE_TIPO_BIEN }}</td>
+                                                <td>{{ PedidoSIGA.DOCUMENTO_REF_OAD }}</td>
+                                                <td>{{ PedidoSIGA.ESTADO_SIAF }}</td>
+                                                <td>{{ PedidoSIGA.EXP_SIAF }}</td>
+                                                <td>{{ PedidoSIGA.EXP_SIGA }}</td>
+                                                <td>{{ PedidoSIGA.TOTAL_FACT_SOLES }}</td>
+                                                <td>
+                                                    <div class="btn-group float-right" role="group" aria-label="---">
+                                                        <button class="btn btn-sm btn-outline-danger"
+                                                                (click)="eliminarPedidoSIGA()">
+                                                            <app-ht-font-awesome name="trash"></app-ht-font-awesome>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </p-panel>
+                    </div>
+
+                    <div class="col-md-12 mb-2">
+                        <p-tabView>
+                            <p-tabPanel header="Datos del Gasto" leftIcon="pi pi-tag">
+                                <div class="row">
+                                    <div class="col-sm-12 form-group mb-2 input-group-sm">
+                                        <label>Hito</label>
+                                        <select class="form-control" formControlName="iHitoId"
+                                                disabled="{{this.disable.integrante}}">
+                                            <option *ngFor="let dat of dataServidor.listaHito"
+                                                    [value]="dat.iHitoId">
+                                                Hito {{dat.iNumeroHito + ' : ' + dat.cNombre + ' (' + dat.dtFechaInicio + ' - ' + dat.dtFechaFin + ')'}}</option>
+                                        </select>
+                                        <app-ht-form-errors
+                                            [control]="frmGastoProyectoControl.iHitoId"></app-ht-form-errors>
+                                    </div>
+                                    <div class="col-sm-12 form-group mb-2 input-group-sm">
+                                        <label>Documento de Gestión</label>
+                                        <input type="text" class="form-control"
+                                               (change)="frmGastoProyectoControl.cDocAprueba.setValue($event.target.value.toUpperCase())"
+                                               formControlName="cDocAprueba"
+                                        >
+                                        <app-ht-form-errors
+                                            [control]="frmGastoProyectoControl.cDocAprueba"></app-ht-form-errors>
+                                    </div>
+                                    <div class="col-sm-12 form-group mb-2 input-group-sm">
+                                        <label class="checkbox mat-checkbox">
+                                            <input type="checkbox" [(ngModel)]="conProveedor"
+                                                   [checked]="conProveedor" [ngModelOptions]="{standalone: true}">
+                                            <span class="checkmark"></span>
+                                            <label>Gasto con Proveedor </label>
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-4 form-group mb-2" *ngIf="conProveedor">
+                                        <label>Proveedor</label>
+                                        <div class="input-group-sm">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary btn-sm" type="button"
+                                                        (click)="abrirModal('Proveedor',modalDatosProveedor) "
+                                                >
+                                                    <app-ht-font-awesome name="search"></app-ht-font-awesome>
+                                                </button>
+                                                <input type="text" placeholder="RUC"
+                                                       class="form-control form-control-sm"
+                                                       style="" size="11"
+                                                       formControlName="valBuscProveedor"
+                                                       (change)="frmGastoProyectoControl.cRazonSocial.reset()"                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-8 form-group mb-2 input-group-sm" *ngIf="conProveedor">
+                                        <label></label>
+                                        <input type="text" placeholder="" class="form-control form-control-sm"
+                                               formControlName="cRazonSocial"/>
+                                    </div>
+
+                                    <div class="col-sm-4 form-group mb-2 input-group-sm">
+                                        <label>Tipo de Documento del Gasto</label>
+                                        <select class="form-control" formControlName="iTipoDocGastoId">
+                                            <option *ngFor="let dat of dataServidor.listaTipoDocGasto"
+                                                    [value]="dat.iTipoDocGastoId">{{dat.cTipoDocGasto}}</option>
+                                        </select>
+                                        <app-ht-form-errors
+                                            [control]="frmGastoProyectoControl.iTipoDocGastoId"></app-ht-form-errors>
+                                    </div>
+                                    <div class="col-sm-2 form-group mb-2 input-group-sm">
+                                        <label>Número</label>
+                                        <input type="text" class="form-control"
+                                               (change)="frmGastoProyectoControl.cNroDocGasto.setValue($event.target.value.toUpperCase())"
+                                               formControlName="cNroDocGasto"
+                                        >
+                                        <app-ht-form-errors
+                                            [control]="frmGastoProyectoControl.cNroDocGasto"></app-ht-form-errors>
+                                    </div>
+                                    <div class="col-sm-3 form-group mb-2 input-group-sm">
+                                        <label>Fecha Gasto</label>
+                                        <input type="date" class="form-control" formControlName="dtGasto">
+                                    </div>
+                                    <div class="col-sm-3 form-group mb-2 input-group-sm">
+                                        <label>Total</label>
+                                        <input type="number" class="form-control form-control-sm"
+                                               formControlName="nGasto"
+                                        >
+                                        <app-ht-form-errors
+                                            [control]="frmGastoProyectoControl.nGasto"></app-ht-form-errors>
+                                    </div>
+
+
+                                    <div class="col-sm-12 form-group mb-2 input-group-sm">
+                                        <label>Accion a realizar</label>
+                                        <input type="text" class="form-control"
+                                               (change)="frmGastoProyectoControl.cAccion.setValue($event.target.value.toUpperCase())"
+                                               formControlName="cAccion"
+                                        >
+                                        <app-ht-form-errors
+                                            [control]="frmGastoProyectoControl.cAccion"></app-ht-form-errors>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12 form-group mb-2 input-group-sm">
+                                        <label>Rendicion de cuentas</label>
+                                    </div>
+
+                                    <div class="col-sm-12 form-group mb-2 input-group-sm">
+                                        <label>Documento</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                               (change)="frmGastoProyectoControl.cDocRend.setValue($event.target.value.toUpperCase())"
+                                               formControlName="cDocRend"
+                                        >
+                                        <app-ht-form-errors
+                                            [control]="frmGastoProyectoControl.cDocRend"></app-ht-form-errors>
+                                    </div>
+                                    <div class="col-sm-12 form-group mb-2 input-group-sm">
+                                        <label>Detalle</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                               (change)="frmGastoProyectoControl.cRendDeta.setValue($event.target.value.toUpperCase())"
+                                               formControlName="cRendDeta"
+                                        >
+                                        <app-ht-form-errors
+                                            [control]="frmGastoProyectoControl.cRendDeta"></app-ht-form-errors>
+                                    </div>
+                                </div>
+                            </p-tabPanel>
+                            <p-tabPanel header="Datos del Avance de la Programación Técnica Mensual"
+                                        leftIcon="pi pi-calendar">
+                                <div class="row">
+                                    <div class="col-md-12 mb-2">
+                                        <ng-container
+                                            *ngIf="dataExtraProyecto.objEspecifico.length > 0">
+
+                                            <p-toast [style]="{marginTop: '80px'}"></p-toast>
+
+                                            <p-accordion>
+                                                <ng-container
+                                                    *ngFor="let objEsp of dataExtraProyecto.objEspecifico; let i = index">
+                                                    <p-accordionTab
+                                                        header="{{ (objEsp.iTipoObjetivoId=='1' ? 'Obj. General: ' : 'Componente '+i+' /Objetivo Específico: ') + objEsp.cObjetivo }}">
+
+                                                        <div class="col-sm-12 table-responsive">
+                                                            <table class="table table-hover table-bordered table-sm "
+                                                                   *ngIf="objEsp.iTipoObjetivoId=='2'">
+                                                                <thead class="thead-dark">
+                                                                <tr class="text-center">
+                                                                    <th rowspan="2">Actividades</th>
+                                                                    <th width="100px" rowspan="2">Unidad de Medida</th>
+                                                                    <th rowspan="2">Meta Física</th>
+                                                                    <!--<th width="80px" rowspan="2">Cantidad de Avance</th>-->
+                                                                    <th [colSpan]="this.iNumMesesProyecto">Cronograma
+                                                                    </th>
+                                                                </tr>
+                                                                <tr class="text-center">
+                                                                    <!--<th width="80px">Programada</th>-->
+                                                                    <!--<th width="80px">Ejecutada</th>-->
+
+                                                                    <th width="5px"
+                                                                        *ngFor="let lmes of listaMeses.numMes; let w = index">M{{ w + 1 }}</th>
+
+                                                                </tr>
+                                                                </thead>
+
+
+                                                                <tbody>
+                                                                <tr *ngFor="let actividad of objEsp.actividad; let y = index"
+                                                                    (click)="modelos.sel_en_lista_act = y"
+                                                                    [class.table-warning]="((modelos.sel_en_lista_act != null) && (modelos.sel_en_lista_act == y))">
+                                                                    <td>
+                                                                        {{ actividad.cActividadDescripcion }}
+                                                                    </td>
+                                                                    <td align="center">
+                                                                        {{ actividad.cUnidadMedida }}
+                                                                    </td>
+                                                                    <td align="center">
+                                                                        {{ actividad.iCantidad }}
+                                                                    </td>
+                                                                    <!--<td align="center">
+                                                                        {{ actividad.iAvanceCantidad }}
+                                                                    </td>-->
+                                                                    <!--     <td align="center">
+                                                                             <input type="number"
+                                                                                    [ngModelOptions]="{standalone: true}"
+                                                                                    [disabled]="(actividad.iActividadId !== this.idActividadAvance && this.idActividadAvance >0 && this.avanceActidad > 0) ||  ( objEsp.iObjetivoId !== this.idObjIndAvance && this.avanceObjInd>0 )"
+                                                                                    (ngModelChange)="selActividadAvance(actividad.iAvance, actividad.iActividadId, objEsp.actividad, objEsp.iObjetivoId, dataExtraProyecto.objEspecifico );"
+                                                                                    [(ngModel)]="actividad.iAvance"
+                                                                                    min=0 max="{{actividad.iCantidad}}"
+                                                                                    number
+                                                                                    [range]="[0, actividad.iCantidad]"
+                                                                                    [min]="0"
+                                                                                    [max]="actividad.iCantidad"
+                                                                                    #iAvance="ngModel"
+                                                                                    (click)="prueba()"
+                                                                                    class="form-control form-control-sm {{actividad.iAvance > 0 ? 'mes-check' : ''}}">
+                                                                         </td>-->
+                                                                    <td *ngFor="let cro of actividad.cronograma; let z = index"
+                                                                        align="center"
+                                                                        class="{{(actividad.cronograma[z].iCalendarioId==this.iCalendarioId && actividad.cronograma[z].iCalendarioId>0) ? 'mes-check' : ''}}">
+                                                                        <input type="radio"
+                                                                               [ngModelOptions]="{standalone: true}"
+                                                                               name="act"
+                                                                               *ngIf="actividad.cronograma[z].iCalendarioId>0"
+                                                                               value="{{actividad.cronograma[z].iCalendarioId}}"
+                                                                               [(ngModel)]="this.iCalendarioId"
+                                                                               ngbTooltip="{{actividad.cronograma[z].cMesDescripcion}}-{{actividad.cronograma[z].cCaleAnyo}}"
+                                                                        >
+                                                                        <!--{{actividad.cronograma[z].iCalendarioId}} {{this.iCalendarioId}} {{actividad.cronograma[z].cMesDescripcion}}-->
+                                                                        <!--{{actividad.mesCalGasto}}-
+                                                                        {{actividad.iCalendarioId}}-->
+
+                                                                    </td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+
+                                                            <!--
+                                                                                                                        <table class="table table-hover table-bordered table-sm ">
+                                                                                                                            <thead class="thead-dark">
+                                                                                                                            <tr class="text-center">
+                                                                                                                                <th rowspan="2">{{ (objEsp.iTipoObjetivoId == '1' ? 'Indicadores de Propósito' : 'Indicadores de Producto') }}</th>
+                                                                                                                                <th width="80px" colspan="2">Meta</th>
+                                                                                                                                <th width="80px" rowspan="2">Cantidad de Avance</th>
+                                                                                                                            </tr>
+                                                                                                                            <tr>
+                                                                                                                                <th width="80px">Programada</th>
+                                                                                                                                <th width="80px">Ejecutada</th>
+                                                                                                                            </tr>
+                                                                                                                            </thead>
+                                                                                                                            <tbody>
+                                                                                                                            <tr *ngFor="let indicador of objEsp.indicador; let x = index"
+                                                                                                                                (click)="modelos.sel_en_lista_ind = x"
+                                                                                                                                [class.table-warning]="((modelos.sel_en_lista_ind != null) && (modelos.sel_en_lista_ind == x))">
+                                                                                                                                <td>
+                                                                                                                                    {{ indicador.cIndicador}}
+                                                                                                                                </td>
+                                                                                                                                <td align="center">
+                                                                                                                                    {{ indicador.iMeta }}
+                                                                                                                                </td>
+                                                                                                                                <td align="center">
+                                                                                                                                    {{ indicador.iEjecutado }}
+                                                                                                                                </td>
+                                                                                                                                <td align="center">
+                                                                                                                                    &lt;!&ndash;[disabled]="objEsp.iObjetivoId !== this.idObjIndAvance && this.avanceObjInd > 0 "&ndash;&gt;
+                                                                                                                                    <input type="number"
+                                                                                                                                           [ngModelOptions]="{standalone: true}"
+                                                                                                                                           [disabled]="objEsp.iObjetivoId !== this.idObjIndAvance && this.idObjIndAvance > 0 && this.avanceObjInd>0
+                                                                                                                                                    || (objEsp.iObjetivoId !== this.idObjIndAvance && this.avanceActidad>0)"
+                                                                                                                                           (ngModelChange)="selObjIndEspAvance(indicador.iAvance, objEsp.iObjetivoId, dataExtraProyecto.objEspecifico);"
+                                                                                                                                           [(ngModel)]="indicador.iAvance"
+                                                                                                                                           min='0' max="{{indicador.iMeta*1}}"
+                                                                                                                                           number [range]="[0, indicador.iMeta*1]"
+                                                                                                                                           [min]="0"
+                                                                                                                                           [max]="indicador.iMeta*1"
+                                                                                                                                           class="form-control form-control-sm {{indicador.iAvance > 0 ? 'mes-check' : ''}}"
+                                                                                                                                           #iAvance="ngModel">
+                                                                                                                                  &lt;!&ndash;  {{objEsp.iObjetivoId + '!==' + this.idObjIndAvance}}&ndash;&gt;
+                                                                                                                                </td>
+                                                                                                                            </tr>
+                                                                                                                            </tbody>
+                                                                                                                        </table>
+                                                            -->
+                                                        </div>
+                                                    </p-accordionTab>
+                                                </ng-container>
+                                            </p-accordion>
+                                        </ng-container>
+                                    </div>
+                                </div>
+
+
+                            </p-tabPanel>
+                        </p-tabView>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button pButton type="button" label="Guardar" class="ui-button-raised"
+                    (click)="enviarFormulario('mantenimiento_gasto_proyecto')"></button>
+            <button pButton type="button" label="Cancelar" class="ui-button-raised ui-button-warning"
+                    (click)="modal.dismiss('cancel'); limpiarFormulario();"
+            ></button>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #modalDatosSIGA let-modal>
+    <div class="modal-body row" style="margin: 2px;">
+        <div class="col-sm-12">
+            <div class="content">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Pedido</th>
+                        <th scope="col">Fecha Pedido</th>
+                        <th scope="col">Fecha Orden Adq.</th>
+                        <th scope="col">N° Orden</th>
+                        <th scope="col">B/S</th>
+                        <th scope="col">Proveedor</th>
+                        <th scope="col">Documento</th>
+                        <th scope="col">Estado SIAF</th>
+                        <th scope="col">Exp SIAF</th>
+                        <th scope="col">Exp SIGA</th>
+                        <th scope="col">Total Factura</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr
+                        *ngFor="let regPer of dataServidor.listaDatosSiga | paginate: { itemsPerPage: 25, currentPage: p }; let i = index"
+                        (dblclick)="modal.close('seleccionar')"
+                        (click)="seleccionarPedidoSIGA(regPer, i); modelos.sel_en_lista_siga = i+regPer.NRO_PEDIDO+regPer.NOMBRE_TIPO_BIEN"
+                        [class.table-warning]="((modelos.sel_en_lista_siga != null) && (modelos.sel_en_lista_siga == i+regPer.NRO_PEDIDO+regPer.NOMBRE_TIPO_BIEN))"
+                    >
+                        <th scope="row">{{i + 1}}</th>
+                        <td>{{ regPer.NRO_PEDIDO }}</td>
+                        <td>{{ regPer.FECHA_PEDIDO }}</td>
+                        <td>{{ regPer.FECHA_ORDEN_OAD }}</td>
+                        <td>{{ regPer.NRO_ORDEN }}</td>
+                        <td>{{ regPer.NOMBRE_TIPO_BIEN }}</td>
+                        <td>{{ regPer.NOMBRE_PROV }}</td>
+                        <td>{{ regPer.DOCUMENTO_REF_OAD }}</td>
+                        <td>{{ regPer.ESTADO_SIAF }}</td>
+                        <td>{{ regPer.EXP_SIAF }}</td>
+                        <td>{{ regPer.EXP_SIGA }}</td>
+                        <td>{{ regPer.TOTAL_FACT_SOLES }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <pagination-controls (pageChange)="p = $event" previousLabel="Anterior"
+                                     nextLabel="Siguiente"></pagination-controls>
+            </div><!-- /.content -->
+        </div><!-- /.col-* -->
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">Cancela</button>
+        <btn-loading btnClass="btn-primary btn" (click)="modal.close('seleccionar')">Seleccionar</btn-loading>
+    </div>
+</ng-template>
+
+<ng-template #modalDatosProveedor let-modal>
+    <div class="modal-body row" style="margin: 2px;">
+        <div class="col-sm-12">
+            <div class="content">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">RUC</th>
+                        <th scope="col">Razón Social</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr
+                        *ngFor="let regProv of dataServidor.listaDatosProveedor | paginate: { itemsPerPage: 15, currentPage: p }; let i = index"
+                        (dblclick)="modal.close('seleccionar')"
+                        (click)="seleccionarProveedor(regProv, i); modelos.sel_en_lista_prov = i"
+                        [class.table-warning]="((modelos.sel_en_lista_prov != null) && (modelos.sel_en_lista_prov == i))"
+                    >
+                        <th scope="row">{{i + 1}}</th>
+                        <td>{{ regProv.cPersDocumento }}</td>
+                        <td>{{ regProv.cPersRazonSocialNombre }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <pagination-controls (pageChange)="p = $event" previousLabel="Anterior"
+                                     nextLabel="Siguiente"></pagination-controls>
+            </div><!-- /.content -->
+        </div><!-- /.col-* -->
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-success" type="button" (click)="llamarAccion(['nuevo_persona', modalPersonaEdit])">
+            <app-ht-font-awesome name="plus"></app-ht-font-awesome>
+            Nuevo
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel')">Cancela</button>
+        <!--      <button type="button" ngbAutofocus class="btn btn-danger btn-rounded" (click)="modal.close('aceptar')">Aceptar</button>-->
+        <btn-loading btnClass="btn-primary btn" (click)="modal.close('seleccionar')">Seleccionar</btn-loading>
+    </div>
+</ng-template>
+
+
+<ng-template #modalPersonaEdit let-modal>
+    <form [formGroup]="frmPersona">
+        <div class="modal-body row" style="margin: 2px;">
+            <div class="col-sm-12">
+                <div class="content">
+                    <div class="page-title">
+                        <h1>Nueva Persona Jurídica</h1>
+                    </div><!-- /.page-title -->
+                    <div class="p20 mb30">
+                        <h3 class="page-title">Persona Juridica</h3>
+                        <div class="row">
+                            <div class="form-group col-sm-6">
+                                <label>Tipo de Documento</label>
+                                <select class="form-control" formControlName="idTipoIdentidad">
+                                    <option *ngFor="let dat of dataServidor.tipoIdentificacion"
+                                            [value]="dat.iTipoIdentId">{{dat.cTipoIdentDescripcion}}</option>
+                                </select>
+                                <app-ht-form-errors
+                                    [control]="frmPersonaControl.idTipoIdentidad"></app-ht-form-errors>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label>Número de Documento</label>
+                                <input type="text" class="form-control" formControlName="numeroDocumento">
+                                <app-ht-form-errors
+                                    [control]="frmPersonaControl.numeroDocumento"></app-ht-form-errors>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-6">
+                                <label>Razón Social</label>
+                                <input type="text" class="form-control" formControlName="razonSocial">
+                                <app-ht-form-errors
+                                    [control]="frmPersonaControl.razonSocial"></app-ht-form-errors>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label>Nombre Corto</label>
+                                <input type="text" class="form-control" formControlName="razonSocialCorto">
+                                <app-ht-form-errors
+                                    [control]="frmPersonaControl.razonSocialCorto"></app-ht-form-errors>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label>Sigla</label>
+                                <input type="text" class="form-control" formControlName="razonSocialSigla">
+                                <app-ht-form-errors
+                                    [control]="frmPersonaControl.razonSocialSigla"></app-ht-form-errors>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label>Representante Legal</label>
+                                <input type="text" class="form-control"
+                                       formControlName="representanteLegal">
+                                <app-ht-form-errors
+                                    [control]="frmPersonaControl.representanteLegal"></app-ht-form-errors>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.content -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button pButton type="button" label="Guardar" class="ui-button-raised"
+                    (click)="enviarFormulario('mantenimiento_persona')"></button>
+            <button pButton type="button" label="Cancelar" class="ui-button-raised ui-button-warning"
+                    (click)="modal.dismiss('cancel')"></button>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #modalSeguimientoTramite let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Seguimiento</h4>
+        <button type="button" class="close" aria-label="Close button" aria-describedby="modal-title"
+                (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body row">
+        <div class="col-md-12 justify-content-center align-items-center">
+
+
+            <!--
+                        <embed class="pdf_viewer" [src]="http://sigeun.unam.edu.pe/modulos/modtramite/e/seguimiento" >
+            -->
+            <iframe src="http://sigeun.unam.edu.pe/modulos/modtramite/e/seguimiento" width="100%" height="100%">
+                <p>Your browser does not support iframes.</p>
+            </iframe>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary btn-rounded"
+                (click)="modal.dismiss('cancel');">Salir
+        </button>
+    </div>
+</ng-template>
+

@@ -1,0 +1,4 @@
+<div *ngIf="control.errors">
+  <small *ngIf="control.errors.required" class="form-text text-danger">Este campo es requerido</small>
+  <small *ngIf="control.errors.minlength" class="form-text text-danger">Se require un minimo de caracteres</small>
+</div>

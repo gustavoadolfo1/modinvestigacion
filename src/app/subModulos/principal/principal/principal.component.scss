@@ -1,0 +1,63 @@
+.botonesCuadrados {
+    button {
+        height: 150px;
+
+        mdc-icon {
+            font-size: 250%;
+        }
+    }
+}
+
+.modal-small {
+    width: 500px !important;
+}
+
+.datatable-body-cell {
+    font-size: 10px !important;
+    text-transform: lowercase !important;
+}
+
+::ng-deep .modalPDF {
+    .modal-dialog {
+        height: 95%;
+    }
+
+    .modal-content {
+        height: 100%;
+    }
+}
+
+.ind-req {
+    color: #34A835;
+    border: #34A835 1px solid;
+    padding: 1px;
+}
+.ind-req:hover {
+    color: white;
+    border: #34A835 1px solid;
+    background-color: #34A835;
+    padding: 1px;
+}
+.ind-contrato {
+    color: #fe9801;
+    border: #fe9801 1px solid;
+    padding: 1px;
+}
+.ind-contrato:hover  {
+    color: white;
+    border: #fe9801 1px solid;
+    background-color: #fe9801;
+    padding: 1px;
+}
+
+.ind-repSimilitud {
+    color: #366ed8;
+    border: #366ed8 1px solid;
+    padding: 1px;
+}
+.ind-repSimilitud:hover {
+    color: white;
+    border: #007ad9 1px solid;
+    background-color: #007ad9;
+    padding: 1px;
+}

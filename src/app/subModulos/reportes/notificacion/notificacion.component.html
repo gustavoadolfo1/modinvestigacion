@@ -1,0 +1,116 @@
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white text-center">
+                NOTIFICACIONES
+            </div>
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <div class="form-inline">
+                            <label>Criterio: &nbsp;</label>
+                            <select class="form-control form-control-sm" [(ngModel)]="idCriterio">
+                                <option value="1">DNI</option>
+                                <option value="2">Nombre</option>
+                                <option value="3">Proyecto</option>
+                                <option value="4">Asunto</option>
+                                <option value="5">Correo</option>
+                            </select>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <label>Texto: &nbsp;</label>
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control form-control-sm"
+                                       [(ngModel)]="variableCriterio" (keyup.enter)="cargarLista()"/>
+                                <div class="input-group-append">
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-secondary btn-sm"
+                                        (click)="cargarLista()"
+                                    >
+                                        <app-ht-font-awesome name="search"></app-ht-font-awesome>
+                                        Buscar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 table-responsive">
+                        <table class="table table-hover table-bordered table-sm ">
+                            <thead class="thead-dark">
+                            <tr class="text-center">
+                                <th>#</th>
+                                <th>DNI</th>
+                                <th>Nombres</th>
+                                <th>Correo</th>
+                                <th>Proyecto</th>
+                                <th>Tipo Notificación</th>
+                                <th>Asunto</th>
+                                <th>Fecha Inicio</th>
+                                <th>Fecha Fin</th>
+                                <th>Fecha Mensaje</th>
+                                <th>Días vigente</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let data of dataServidor.mostrarLista | paginate: { itemsPerPage: 25, currentPage: p }; index as i"
+                                (click)="modelos.sel_en_lista = data"
+                                [class.table-warning]="((modelos.sel_en_lista != null) &&
+                                (modelos.sel_en_lista.iNotificacionId == data.iNotificacionId))">
+                                <td>{{(i + 1)}}</td>
+                                <td class="text-center">{{data.cPersDocumento}}</td>
+                                <td class="text-justify">{{data.cPersPaterno}} {{data.cPersMaterno}}
+                                    , {{data.cPersNombre}}</td>
+                                <td class="text-justify">{{data.cCorreo}}</td>
+                                <td class="text-justify">{{data.cNombreProyecto}}</td>
+                                <td class="text-center">{{data.tipoNotificacion}} {{data.cTipoMiembroDescripcion}}</td>
+                                <td class="text-justify">{{data.cAsunto}}</td>
+                                <td>{{data.dtFechaInicio|date: 'short'}}</td>
+                                <td>{{data.dtFechaFin|date: 'short'}}</td>
+                                <td>{{data.dtEnvio|date: 'short'}}</td>
+                                <td class="text-right">{{data.nroDiasVigente}}</td>
+                                <td class="text-center">
+                                    <div class="btn-group float-right" role="group" aria-label="---">
+                                        <button pButton type="button"
+                                                class="ui-button-raised ui-button-secondary"
+                                                icon="pi pi-eye"
+                                                (click)="verNotificacion([modalNotificacion, data])"></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <pagination-controls (pageChange)="p = $event" previousLabel="Anterior"
+                                             nextLabel="Siguiente"></pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #modalNotificacion let-modal>
+    <div class="modal-header ht-modal-header">
+        <div class="modal-title">
+            <h4>{{ this.imprimir.modalTitulo }}</h4>
+        </div>
+    </div>
+
+        <div class="modal-body row" style="margin: 2px;">
+            <div class="col-sm-12">
+                <div class="row">
+                    <div [innerHTML]="mensaje"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button pButton type="button" label="Cerrar" class="ui-button-raised ui-button-warning"
+                    (click)="modal.dismiss('cancel'); this.mensaje='';"
+            ></button>
+        </div>
+</ng-template>
+
+

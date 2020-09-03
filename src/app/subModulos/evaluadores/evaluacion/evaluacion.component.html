@@ -1,0 +1,190 @@
+<div class="row justify-content-center">
+
+    <div class="col-xl-12 col-lg-12">
+        <div class="card mb-4">
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-sm-4 mb-3">
+                        <div class="input-group-append">
+                            <button class="btn btn-sm btn-outline-success" type="button"
+                                    (click)="llamarAccion(['nuevo', modalConvocatoria])">
+                                <app-ht-font-awesome name="plus"></app-ht-font-awesome>
+                                Nueva Evaluación
+                            </button>
+                        </div>
+                    </div>
+
+                    <!----------->
+                    <div class="col-sm-4 mb-3">
+                        <div *ngFor="let data of dataServidor.mostrarLista2 ; index as i">
+                            <button pButton type="button" label="Ver Archivo del Proyecto" class="ui-button-danger"
+                                    *ngIf="data.iEstado == 1" type="button"
+                                    (click)="mostrarPDF(modalPDF1, data.cArchivoInf)"
+                            ></button>
+                        </div>
+                    </div>
+                    <!------->
+
+                    <div class="col-sm-4 mb-3">
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                    </div>
+
+                    <div class="col-sm-12 table-responsive">
+                        <table class="table table-hover table-bordered table-sm ">
+                            <thead class="thead-dark">
+                            <tr class="text-center">
+                                <th>#</th>
+                                <th>Proyecto</th>
+                                <th>Archivo</th>
+                                <th>Situacion</th>
+                                <th>resultado</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let data of dataServidor.mostrarLista ; index as i"
+                                (click)="modelos.sel_en_lista = data"
+                                [class.table-warning]="((modelos.sel_en_lista != null) &&
+                                (modelos.sel_en_lista.iEvaluacionProyectoId == data.iEvaluacionProyectoId))">
+                                <td>{{(i + 1)}}</td>
+                                <td>{{data.cNombreProyecto}}</td>
+                                <td class="text-center">
+                                    <button *ngIf="data.cDoc" type="button"
+                                            class="btn btn-outline-danger"
+                                            (click)="mostrarPDF(modalPDF, data.cDoc)">
+                                        <app-ht-font-awesome name="file-pdf-o"></app-ht-font-awesome>
+                                        PDF
+                                    </button>
+                                </td>
+
+                                <td>{{data.cDescripcion}}</td>
+                                <td>{{data.cResultados}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #modalConvocatoria let-modal>
+    <div class="modal-header ht-modal-header">
+        <div class="modal-title">
+            <h4>Subir Resultados</h4>
+        </div>
+    </div>
+    <form [formGroup]="frmConvocatoria" (ngSubmit)="enviarFormulario('mantenimiento_evaluacion')">
+        <div class="modal-body row" style="margin: 2px;">
+            <div class="col-sm-12">
+                <div class="row">
+
+                    <div class="col-sm-12 mb-3">
+                        <p-panel header="Archivos" [toggleable]="true"
+                                 [style]="{'margin-bottom':'20px'}">
+
+                            <div class="col-sm-12 mb-3">
+                                <label>Documento de Resultado</label>
+                                <br><label *ngIf="!['',null].includes(this.archivos.cDoc)">Archivo
+                                Guardado: </label>
+                                <button pButton type="button" *ngIf="!['',null].includes(this.archivos.cDoc)"
+                                        label="{{this.archivos.cDoc.replace('storage/inv/convocatorias/','')}}"
+                                        class="ui-button-rounded ui-button-danger" icon="pi pi-file-pdf"
+                                        (click)="mostrarPDF(modalPDF, this.archivos.cDoc)"
+                                ></button>
+                                <global-file-upload formControlName="cDoc"
+                                                    [extensionesPermitidas]="['pdf']"></global-file-upload>
+                                <app-ht-form-errors
+                                    [control]="frmConvocatoriaControl.cDoc"></app-ht-form-errors>
+
+                                <div class="col-sm-8 form-group mb-2 input-group-sm">
+                                    <label>Resultados</label>
+                                    <select type="text" class="form-control form-control-sm"  formControlName="cResultados">
+                                        <option>APROBADO</option>
+                                        <option>DESAPROBADO</option>
+                                        <option>APROBADO CON OBSERVACIONES</option>
+                                    </select>
+                                    <app-ht-form-errors
+                                        [control]="frmConvocatoriaControl.cResultados"></app-ht-form-errors>
+                                </div>
+                                <div class="col-sm-8 form-group mb-2 input-group-sm">
+                                    <label>Puntaje Total</label>
+                                    <input type="number" placeholder="" class="form-control form-control-sm"
+                                           formControlName="nPuntajeTotal"/>
+                                    <app-ht-form-errors
+                                        [control]="frmConvocatoriaControl.nPuntajeTotal"></app-ht-form-errors>
+                                </div>
+                                <div class="col-sm-8 form-group mb-2 input-group-sm">
+                                    <label>Puntaje Ponderado</label>
+                                    <input type="number" placeholder="" class="form-control form-control-sm"
+                                           formControlName="nPuntajePonderado"/>
+                                    <app-ht-form-errors
+                                        [control]="frmConvocatoriaControl.nPuntajePonderado"></app-ht-form-errors>
+                                </div>
+                            </div>
+                        </p-panel>
+                     <!-------
+                     {{frmConvocatoria.value | json }}
+                     -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button pButton type="button" label="Guardar" class="ui-button-raised" (click)="enviarFormulario('mantenimiento_evaluacion')"></button>
+            <button pButton type="button" label="Cancelar" class="ui-button-raised ui-button-warning" (click)="modal.dismiss('cancel'); "></button>
+
+        </div>
+    </form>
+
+</ng-template>
+
+
+<ng-template #modalPDF1 let-modal>
+
+    <div class="modal-header">
+        <h4 class="modal-title">Documento Final del Proyecto a Revisar</h4>
+        <button type="button" class="close" aria-label="Close button" aria-describedby="modal-title"
+                (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body row">
+        <div class="col-md-12 justify-content-center align-items-center">
+            <global-embed-pdf class="pdf_viewer" [src]="pdfActual"></global-embed-pdf>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary btn-rounded"
+                (click)="modal.dismiss('cancel'); cerrarPDF();">Salir
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #modalPDF let-modal>
+
+
+    <div class="modal-header">
+        <h4 class="modal-title">Documento de Resultados</h4>
+        <button type="button" class="close" aria-label="Close button" aria-describedby="modal-title"
+                (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body row">
+        <div class="col-md-12 justify-content-center align-items-center">
+            <global-embed-pdf class="pdf_viewer" [src]="pdfActual"></global-embed-pdf>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary btn-rounded"
+                (click)="modal.dismiss('cancel'); cerrarPDF();">Salir
+        </button>
+    </div>
+</ng-template>
+
+
+

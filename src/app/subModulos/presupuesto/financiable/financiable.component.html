@@ -1,0 +1,77 @@
+
+
+<table class="table table-hover table-bordered table-sm ">
+    <thead class="thead-dark">
+    <tr class="text-center">
+        <th>#</th>
+        <th>Rubro
+
+        </th>
+        <th>Presupuesto</th>
+
+
+    </tr>
+    </thead>
+    <tbody  >
+
+    <tr *ngFor="let data of dataServidor.mostrarLista1 ; index as i"
+        (click)="modelos.sel_en_lista = data"
+        [class.table-warning]="((modelos.sel_en_lista != null) &&
+                                 (modelos.sel_en_lista.iPresupuestoId == data.iPresupuestoId))">
+
+
+        <td>{{i +1}}</td>
+        <td>{{data.cRubroDescripcion}}</td>
+        <td>
+            <input type="number" (ngModelChange)="prueba()"
+                   [(ngModel)]="modelos.valores[data.iRubroId]" name="totalPresupuesto"
+                   #totalPresupuesto="ngModel"
+                   class="form-control form-control-sm"
+                   [class.is-invalid]="modelos.valores[data.iRubroId]==null || modelos.valores[data.iRubroId]==''">
+
+        </td>
+
+    </tr>
+
+    </tbody>
+</table>
+
+
+
+    <div class="modal-footer">
+        <button pButton type="button" label="Guardar" class="ui-button-raised" (click)="guardarProgTec()"></button>
+        <button pButton type="button" label="Cancelar" class="ui-button-raised ui-button-warning" (click)="cancelar()"></button>
+    </div>
+
+
+
+<table class="table table-hover table-bordered table-sm ">
+    <thead class="thead-dark">
+    <tr class="text-center">
+        <th>#</th>
+        <th>Presupuesto Asignado</th>
+        <th>Presupuesto - 5% </th>
+        <th>Presupuesto Registrado</th>
+        <th>Presupuesto Disponible</th>
+
+    </tr>
+    </thead>
+    <tbody  >
+
+    <tr *ngFor="let data of dataServidor.mostrarLista2 ; index as i"
+        (click)="modelos.sel_en_lista = data"
+        [class.table-warning]="((modelos.sel_en_lista != null) &&
+                                 (modelos.sel_en_lista.iPresupuestoId == data.iPresupuestoId))">
+
+
+        <td>{{i +1}}</td>
+        <td>{{data.PresupuestoAsignado}}</td>
+        <td>{{data.PresupuestoPorcentuado}}</td>
+        <td>{{data.PresupuestoRegistrado}}</td>
+        <td>{{data.PresupuestoDisponible}}</td>
+
+
+    </tr>
+
+    </tbody>
+</table>

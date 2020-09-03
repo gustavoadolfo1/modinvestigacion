@@ -1,0 +1,26 @@
+.modal-small {
+    width: 500px !important;
+}
+
+.datatable-body-cell {
+    font-size: 10px !important;
+    text-transform: lowercase !important;
+}
+
+::ng-deep .modalPDF {
+    .modal-dialog {
+        height: 95%;
+    }
+
+    .modal-content {
+        height: 100%;
+    }
+}
+
+.trun {
+    width: 200px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 10px;
+}

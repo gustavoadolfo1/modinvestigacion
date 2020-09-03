@@ -1,0 +1,14 @@
+.is-invalid {
+    border-color: #df0029;
+}
+.mes-check {
+    background-color:#ffff99;
+}
+::ng-deep .modalPDF {
+    .modal-dialog{
+        height: 95%;
+    }
+    .modal-content {
+        height: 100%;
+    }
+}

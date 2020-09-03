@@ -1,0 +1,1023 @@
+<div class="list-item">
+    <a routerLink="/investigacion/gestion">
+        <button pButton type="button" icon="pi pi-angle-left" label="Seguir Gestionando Proyecto"></button>
+        <!-- this.router.navigate(['/investigacion/gestion']); -->
+    </a>
+</div>
+
+<div class="separator-breadcrumb border-top"></div>
+
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white text-center">
+                INFORME TÉCNICO DE AVANCE DEL PROYECTO AL HITO N° {{ this.dataHito.iNumeroHito }}: {{ this.dataHito.cNombre }}
+            </div>
+            <div class="card-body">
+                <div class="col-md-12 mb-2">
+                    <div class="row">
+                        <div class="col-sm-2 mb-2">
+                            <b>Título de Proyecto:</b>
+                        </div>
+                        <div class="col-sm-10 mb-2">
+                            {{ this.dataProyecto.nomProyecto }}
+                        </div>
+                        <div class="col-sm-2 mb-2">
+                            <b>Director del Proyecto:</b>
+                        </div>
+                        <div class="col-sm-10 mb-2">
+                            {{ this.dataProyecto.nomDirector }}
+                        </div>
+                        <div class="col-sm-2 mb-2">
+                            <b>Periodo de Ejecución:</b>
+                        </div>
+                        <div class="col-sm-10 mb-2">
+                            Del {{ this.dataHito.dtFechaInicio }} al {{ this.dataHito.dtFechaFin }}
+                        </div>
+                        <div class="col-sm-2 mb-2">
+                            <b>Resolución de aprobación:</b>
+                        </div>
+                        <div class="col-sm-10 mb-2">
+                            {{ this.dataProyecto.resolucion }}
+                        </div>
+                        <div class="col-sm-2 mb-2">
+                            <b>Fecha de Informe:</b>
+                        </div>
+                        <div class="col-sm-10 mb-2">
+                            <input [(ngModel)]="this.dataInfTec.dtFechaInfoAvTec" type="date"
+                                   [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                   class="form-control form-control-sm">
+                        </div>
+
+                        <div class="col-md-12 mb-2">
+                            <p-toast [style]="{marginTop: '80px'}"></p-toast>
+                            <p-accordion [activeIndex]="index">
+                                <p-accordionTab header=" 1. Resumen Ejecutivo:">
+                                    <div class="row">
+                                        <div class="col-md-12 form-group mb-2">
+                                            <textarea class="form-control form-control-sm"
+                                                      [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                      [class.is-invalid]="this.dataInfTec.cResumenEjecutivo==null || this.dataInfTec.cResumenEjecutivo==''"
+                                                      [(ngModel)]="this.dataInfTec.cResumenEjecutivo"
+                                                      (change)="mayusculaAll('cResumenEjecutivo', this.dataInfTec, $event.target.value.toUpperCase())"
+                                            ></textarea>
+                                        </div>
+                                    </div>
+                                </p-accordionTab>
+
+
+                                <p-accordionTab
+                                    header=" 2. Avances Logrados al Hito {{ this.dataHito.iNumeroHito }} (Cuadro/Acumulativo):">
+                                    <div class="row">
+                                        <div class="col-sm-12 table-responsive">
+
+                                            <table class="table table-hover table-bordered table-sm">
+                                                <thead class="thead-dark">
+                                                <tr class="text-center">
+                                                    <th width="80px" rowspan="2">Nivel</th>
+                                                    <th rowspan="2">Indicadores</th>
+                                                    <th colspan="2">Meta</th>
+                                                    <th colspan="2">Nivel de Avance</th>
+                                                    <th rowspan="2" colspan="2">Medios de Verificación</th>
+                                                </tr>
+                                                <tr class="text-center">
+                                                    <th width="80px">Programada</th>
+                                                    <th width="80px">Ejecutada</th>
+                                                    <th width="80px">Cantidad</th>
+                                                    <th width="80px">%</th>
+                                                </tr>
+                                                <tr class="text-center">
+                                                    <th width="200px">Objetivo General</th>
+                                                    <th colspan="7">Indicadores de Propósito</th>
+                                                </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                <tr *ngFor="let avTec of dataInfTec.objGral; let i = index;"
+                                                    (click)="modelos.sel_en_lista_logro = 'obEG' + i"
+                                                    [class.table-warning]="((modelos.sel_en_lista_logro != null) && (modelos.sel_en_lista_logro ==  'obEG' + i))">
+                                                    <td width="200px" [rowSpan]="this.avTec.numInd" *ngIf="i==0">
+                                                        {{avTec.cObjetivo}}
+                                                    </td>
+                                                    <td width="200px">
+                                                        {{avTec.cIndicador}}
+                                                    </td>
+                                                    <td class="text-center" width="15px">
+                                                        {{avTec.iMeta}}
+                                                    </td>
+                                                    <td class="text-center" width="15px">
+                                                        {{avTec.iEjecutado}}
+                                                    </td>
+                                                    <td class="text-center" width="15px">
+                                                        <input type="number"
+                                                               [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+
+                                                               [(ngModel)]="avTec.iCantidad"
+                                                               min=0 number [range]="[0, avTec.iMeta]"
+                                                               class="form-control form-control-sm"
+                                                               [class.is-invalid]="avTec.iCantidad==null || avTec.iCantidad==''"
+                                                        >
+                                                        <!--ds
+                                                        (ngModelChange)="calculaPorctInd(avTecHitoAnt, 'pendiente')"
+
+                                                        -->
+                                                    </td>
+                                                    <td class="text-center" width="15px">
+                                                        {{avTec.nEjecutadoPorcentaje |number:'.2'}}
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <textarea class="form-control form-control-sm"
+                                                                  [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                                  [class.is-invalid]="avTec.cMedioVerificacion==null || avTec.cMedioVerificacion==''"
+                                                                  [(ngModel)]="avTec.cMedioVerificacion"
+                                                                  (change)="mayusculaAll('cMedioVerificacion', avTec, $event.target.value.toUpperCase())"
+                                                        ></textarea>
+                                                    </td>
+                                                    <td width="75px">
+                                                    <label *ngIf="!['',null].includes(avTec.cArchivo) && avTec.cArchivo[0].name==undefined">Archivo
+                                                        Guardado: </label>
+                                                    <button pButton type="button" *ngIf="!['',null].includes(avTec.cArchivo) && avTec.cArchivo[0].name==undefined"
+                                                            label="{{avTec.cArchivo.replace('storage/inv/'+this.idProyecto+'/infAvance/','')}}"
+                                                            class="ui-button-rounded ui-button-danger trun"
+                                                            icon="pi pi-file-pdf"
+                                                            (click)="mostrarPDF(modalPDF, avTec.cArchivo)"
+                                                    ></button>
+                                                    <div *ngIf="(this.dataInfTec.iEstado == 0 || this.dataInfTec.iEstado == null) && ![this.perfilesDeUsuarios.monitor].includes(this.perfilActual)">
+                                                        <global-file-upload [(ngModel)]="avTec.cArchivo"
+                                                                            [extensionesPermitidas]="['pdf']"></global-file-upload>
+                                                    </div>
+                                                </td>
+                                                </tr>
+                                                </tbody>
+                                                <thead class="thead-dark">
+                                                <tr class="text-center">
+                                                    <th width="200px">Componente/Objetivo Específico</th>
+                                                    <th colspan="7">Indicadores de Producto</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr *ngFor="let avTec of dataInfTec.objEspecifico; let j = index;"
+                                                    (click)="modelos.sel_en_lista_logro = 'obEI' + j"
+                                                    [class.table-warning]="((modelos.sel_en_lista_logro != null) && (modelos.sel_en_lista_logro ==  'obEI' + j))">
+
+                                                    <td width="200px" [rowSpan]="this.avTec.numInd"
+                                                        *ngIf="comparaObj(avTec.iObjetivoId)  || j == 0 ">
+                                                        {{ avTec.cObjetivo}}
+                                                    </td>
+                                                    <td width="200px">
+                                                        {{avTec.cIndicador}}
+                                                    </td>
+                                                    <td class="text-center" width="15px">
+                                                        {{avTec.iMeta}}
+                                                    </td>
+                                                    <td class="text-center" width="15px">
+                                                        {{avTec.iEjecutado}}
+                                                    </td>
+
+                                                    <td class="text-center" width="15px">
+                                                        <input type="number"
+                                                               [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+
+                                                               [(ngModel)]="avTec.iCantidad"
+                                                               min=0 number [range]="[0, avTec.iMeta]"
+                                                               class="form-control form-control-sm"
+                                                               [class.is-invalid]="avTec.iCantidad==null || avTec.iCantidad==''"
+                                                        >
+                                                    </td>
+                                                    <td class="text-center" width="15px">
+                                                        {{avTec.nEjecutadoPorcentaje |number: '.2'}}
+                                                    </td>
+                                                    <td class="text-center" width="150px">
+                                                        <textarea class="form-control form-control-sm"
+                                                                  [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                                  [class.is-invalid]="avTec.cMedioVerificacion==null || avTec.cMedioVerificacion==''"
+                                                                  [(ngModel)]="avTec.cMedioVerificacion"
+                                                                  (change)="mayusculaAll('cMedioVerificacion', avTec, $event.target.value.toUpperCase())"
+                                                        ></textarea>
+                                                    </td>
+                                                    <td width="75px">
+                                                        <label *ngIf="!['',null].includes(avTec.cArchivo) && avTec.cArchivo[0].name==undefined">Archivo
+                                                            Guardado: </label>
+                                                        <button pButton type="button" *ngIf="!['',null].includes(avTec.cArchivo) && avTec.cArchivo[0].name==undefined"
+                                                                label="{{avTec.cArchivo.replace('storage/inv/'+this.idProyecto+'/infAvance/','')}}"
+                                                                class="ui-button-rounded ui-button-danger trun"
+                                                                icon="pi pi-file-pdf"
+                                                                (click)="mostrarPDF(modalPDF, avTec.cArchivo)"
+                                                        ></button>
+                                                        <div *ngIf="(this.dataInfTec.iEstado == 0 || this.dataInfTec.iEstado == null) && ![this.perfilesDeUsuarios.monitor].includes(this.perfilActual)">
+                                                        <global-file-upload [(ngModel)]="avTec.cArchivo"
+                                                                            [extensionesPermitidas]="['pdf']"></global-file-upload>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                                <!--actividades-->
+                                                <thead class="thead-dark">
+                                                <tr class="text-center">
+                                                    <th width="200px"></th>
+                                                    <th colspan="7">Actividades</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr *ngFor="let act of dataInfTec.actividades; let k = index;"
+                                                    (click)="modelos.sel_en_lista_logro = 'act' + k"
+                                                    [class.table-warning]="((modelos.sel_en_lista_logro != null) && (modelos.sel_en_lista_logro ==  'act' + k))">
+
+
+                                                <td width="200px" [rowSpan]="this.act.numAct"
+                                                        *ngIf="comparaObj(act.iObjetivoId) || k == 0">
+                                                        {{ act.cObjetivo}}
+                                                    </td>
+                                                    <td width="200px">
+                                                        {{act.cActividadDescripcion}}
+                                                    </td>
+                                                    <td class="text-center" width="15px">
+                                                        {{act.iMeta}}
+                                                    </td>
+                                                    <td class="text-center" width="15px">
+                                                        {{act.iEjecutado}}
+                                                    </td>
+
+                                                    <td class="text-center" width="15px">
+                                                        <input type="number"
+                                                               [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+
+                                                               [(ngModel)]="act.iCantidad"
+                                                               min=0 number [range]="[0, act.iMeta]"
+                                                               class="form-control form-control-sm"
+                                                               [class.is-invalid]="act.iCantidad==null || act.iCantidad==''"
+                                                        >
+                                                    </td>
+                                                    <td class="text-center" width="15px">
+                                                        {{act.nEjecutadoPorcentaje |number: '.2'}}
+                                                    </td>
+                                                    <td class="text-center" width="150px">
+                                                        <textarea class="form-control form-control-sm"
+                                                                  [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                                  [class.is-invalid]="act.cMedioVerificacion==null || act.cMedioVerificacion==''"
+                                                                  [(ngModel)]="act.cMedioVerificacion"
+                                                                  (change)="mayusculaAll('cMedioVerificacion', act, $event.target.value.toUpperCase())"
+                                                        ></textarea>
+                                                    </td>
+                                                    <td width="75px">
+                                                        <label *ngIf="!['',null].includes(act.cArchivo) && act.cArchivo[0].name==undefined">Archivo
+                                                            Guardado: </label>
+                                                        <button pButton type="button" *ngIf="!['',null].includes(act.cArchivo) && act.cArchivo[0].name==undefined"
+                                                                label="{{act.cArchivo.replace('storage/inv/'+this.idProyecto+'/infAvance/','')}}"
+                                                                class="ui-button-rounded ui-button-danger trun"
+                                                                icon="pi pi-file-pdf"
+                                                                (click)="mostrarPDF(modalPDF, act.cArchivo)"
+                                                        ></button>
+                                                        <div *ngIf="(this.dataInfTec.iEstado == 0 || this.dataInfTec.iEstado == null) && ![this.perfilesDeUsuarios.monitor].includes(this.perfilActual)">
+                                                        <global-file-upload [(ngModel)]="act.cArchivo"
+                                                                            [extensionesPermitidas]="['pdf']"></global-file-upload>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </p-accordionTab>
+
+                                <p-accordionTab
+                                    header=" 3. Avances en la ejecución al hito, respecto a lo programado en el Plan Operativo del Proyecto POP:">
+                                    <p-accordion [multiple]="true">
+                                        <p-accordionTab [selected]="true" header=" 3.2 Indicadores de Hito">
+                                            <div class="row">
+                                                <div class="col-sm-12 table-responsive">
+                                                    <table class="table table-hover table-bordered table-sm">
+                                                        <thead class="thead-dark">
+                                                        <tr class="text-center">
+                                                            <th rowspan="2">Indicadores</th>
+                                                            <th colspan="2">Meta</th>
+                                                            <th rowspan="2">Avance (%)</th>
+                                                            <th rowspan="2">Medios de Verificación</th>
+                                                            <th rowspan="2" width="150">Afecta el desarrollo de algún indicador del
+                                                                siguiente Hito
+                                                            </th>
+                                                            <th rowspan="2">Fecha en que se cumplirá</th>
+                                                        </tr>
+                                                        <tr class="text-center">
+                                                            <th width="80px">Programada</th>
+                                                            <th width="80px">Ejecutada</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr *ngFor="let avTecHito of dataInfTec.hito; let i = index;"
+                                                            (click)="modelos.sel_en_lista_ind_ht = i"
+                                                            [class.table-warning]="((modelos.sel_en_lista_ind_ht != null) && (modelos.sel_en_lista_ind_ht ==  i))">
+                                                            <td width="200px">
+                                                                {{avTecHito.cIndicadorHito}}
+                                                            </td>
+                                                            <td class="text-center" width="15px">
+                                                                {{avTecHito.iMeta}}
+                                                            </td>
+                                                            <td class="text-center" width="15px">
+                                                                <input type="number"
+                                                                       [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                                       (ngModelChange)="calculaPorctInd(avTecHito, '')"
+                                                                       [(ngModel)]="avTecHito.iCantidad"
+                                                                       min=0 number [range]="[0, avTecHito.iMeta]"
+                                                                       class="form-control form-control-sm"
+                                                                       [class.is-invalid]="avTecHito.iCantidad==null || avTecHito.iCantidad==''"
+                                                                >
+                                                            </td>
+                                                            <td class="text-center" width="15px">
+                                                                {{avTecHito.nEjecutadoPorcentaje |number: '.2'}}
+                                                            </td>
+                                                            <td class="text-center" width="15px">
+                                                                <textarea class="form-control form-control-sm"
+                                                                          [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                                          [class.is-invalid]="avTecHito.cMedioVerificacion==null || avTecHito.cMedioVerificacion==''"
+                                                                          [(ngModel)]="avTecHito.cMedioVerificacion"
+                                                                          (change)="mayusculaAll('cMedioVerificacion', avTecHito, $event.target.value.toUpperCase())"
+                                                                ></textarea>
+                                                            </td>
+                                                            <td>
+                                                                <select [(ngModel)]="avTecHito.iAfectaIndSgtHito"
+                                                                        [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                                        class="form-control form-control-sm"
+                                                                        [class.is-invalid]="avTecHito.iAfectaIndSgtHito==null || avTecHito.iAfectaIndSgtHito==''">
+                                                                    <option value="1">SI</option>
+                                                                    <option value="0">NO</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <input [(ngModel)]="avTecHito.dtFechaCumplir"
+                                                                       type="date"
+                                                                       [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                                       class="form-control form-control-sm">
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                        <thead class="thead-dark">
+                                                        <tr>
+                                                            <th colspan="7">Detalle del avance logrado o causas de
+                                                                incumplimiento
+                                                            </th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr>
+                                                            <td class="text-center" colspan="7">
+                                                                <textarea class="form-control form-control-sm"
+                                                                          [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                                          [class.is-invalid]="dataInfTec.cDetAvIndHito==null || dataInfTec.cDetAvIndHito==''"
+                                                                          [(ngModel)]="dataInfTec.cDetAvIndHito"
+                                                                          (change)="mayusculaAll('cDetAvIndHito', dataInfTec, $event.target.value.toUpperCase())"
+                                                                ></textarea>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                </div>
+                                            </div>
+                                        </p-accordionTab>
+
+                                        <p-accordionTab [selected]="true"
+                                                        header=" 3.3 Indicadores no Completados en el Hito Anterior">
+                                            <div class="row">
+                                                <div class="col-sm-12 table-responsive">
+                                                    <table class="table table-hover table-bordered table-sm">
+                                                        <thead class="thead-dark">
+                                                        <tr class="text-center">
+                                                            <th rowspan="2">Hito</th>
+                                                            <th rowspan="2">Indicadores</th>
+                                                            <th colspan="2">Meta</th>
+                                                            <th rowspan="2">Avance (%)</th>
+                                                            <th rowspan="2">Medios de Verificación</th>
+                                                            <th rowspan="2" width="150">Afecta el desarrollo de algún indicador del
+                                                                siguiente Hito
+                                                            </th>
+                                                            <th rowspan="2">Fecha en que se cumplirá</th>
+                                                        </tr>
+                                                        <tr class="text-center">
+                                                            <th width="80px">Pendiente</th>
+                                                            <th width="80px">Ejecutada</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr *ngFor="let avTecHitoAnt of dataInfTec.hitoAnt; let i = index;"
+                                                            (click)="modelos.sel_en_lista_ind_ht_ant = i"
+                                                            [class.table-warning]="((modelos.sel_en_lista_ind_ht_ant != null) && (modelos.sel_en_lista_ind_ht_ant ==  i))">
+                                                            <td width="200px">
+                                                                {{avTecHitoAnt.iNumeroHito}}
+                                                            </td>
+                                                            <td width="200px">
+                                                                {{avTecHitoAnt.cIndicadorHito}}
+                                                            </td>
+                                                            <td class="text-center" width="15px">
+                                                                {{avTecHitoAnt.iMeta - avTecHitoAnt.totalEjecAntesHito}}
+                                                            </td>
+                                                            <td class="text-center" width="15px">
+                                                                <input type="number"
+                                                                       [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                                       (ngModelChange)="calculaPorctInd(avTecHitoAnt, 'pendiente')"
+                                                                       [(ngModel)]="avTecHitoAnt.iCantidad"
+                                                                       min=0 number [range]="[0, avTecHitoAnt.iMeta]"
+                                                                       class="form-control form-control-sm"
+                                                                       [class.is-invalid]="avTecHitoAnt.iCantidad==null || avTecHitoAnt.iCantidad==''"
+                                                                >
+                                                            </td>
+                                                            <td class="text-center" width="15px">
+                                                                {{avTecHitoAnt.nEjecutadoPorcentaje |number: '.2'}}
+                                                            </td>
+                                                            <td class="text-center" width="15px">
+                                                                <textarea class="form-control form-control-sm"
+                                                                          [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                                          [class.is-invalid]="avTecHitoAnt.cMedioVerificacion==null || avTecHitoAnt.cMedioVerificacion==''"
+                                                                          [(ngModel)]="avTecHitoAnt.cMedioVerificacion"
+                                                                          (change)="mayusculaAll('cMedioVerificacion', avTecHitoAnt, $event.target.value.toUpperCase())"
+                                                                ></textarea>
+                                                            </td>
+                                                            <td>
+                                                                <select [(ngModel)]="avTecHitoAnt.iAfectaIndSgtHito"
+                                                                        [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                                        class="form-control form-control-sm"
+                                                                        [class.is-invalid]="avTecHitoAnt.iAfectaIndSgtHito==null || avTecHitoAnt.iAfectaIndSgtHito==''">
+                                                                    <option value="1">SI</option>
+                                                                    <option value="0">NO</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <input [(ngModel)]="avTecHitoAnt.dtFechaCumplir"
+                                                                       [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                                       type="date" class="form-control form-control-sm">
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                        <thead class="thead-dark">
+                                                        <tr>
+                                                            <th colspan="8">Detalle del avance logrado o causas de
+                                                                incumplimiento
+                                                            </th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr>
+                                                            <td class="text-center" colspan="8">
+                                                                <textarea class="form-control form-control-sm"
+                                                                          [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                                          *ngIf="dataInfTec.hitoAnt.length>0"
+                                                                          [class.is-invalid]="dataInfTec.cDetAvIndNoCompletoHitoAnt==null || dataInfTec.cDetAvIndNoCompletoHitoAnt==''"
+                                                                          [(ngModel)]="dataInfTec.cDetAvIndNoCompletoHitoAnt"
+                                                                          (change)="mayusculaAll('cDetAvIndNoCompletoHitoAnt', dataInfTec, $event.target.value.toUpperCase())"
+                                                                ></textarea>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                </div>
+                                            </div>
+                                        </p-accordionTab>
+
+                                    </p-accordion>
+                                </p-accordionTab>
+
+                                <p-accordionTab
+                                    header=" 4. Otros Resultados Logrados en el Período de Hito">
+                                    <div class="row">
+                                        <div class="col-sm-12 table-responsive">
+                                            <table class="table table-hover table-bordered table-sm ">
+                                                <thead class="thead-dark">
+                                                <tr class="text-center">
+                                                    <th width="5px" *ngIf="(this.dataInfTec.iEstado == 0 || this.dataInfTec.iEstado == null) && ![this.perfilesDeUsuarios.monitor].includes(this.perfilActual)">
+                                                        <button pButton type="button"
+                                                                class="ui-button-raised ui-button-info"
+                                                                icon="pi pi-plus"
+                                                                (click)="agregarResultadoLogrado()"></button>
+                                                    </th>
+                                                    <th width="80px">Nro</th>
+                                                    <th>Descripción</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr *ngFor="let resLog of dataInfTec.resultadoLogrado; let x = index"
+                                                    (click)="modelos.sel_en_lista_resLog = x"
+                                                    [class.table-warning]="((modelos.sel_en_lista_resLog != null) && (modelos.sel_en_lista_resLog == x))">
+                                                    <td class="text-center" *ngIf="(this.dataInfTec.iEstado == 0 || this.dataInfTec.iEstado == null) && ![this.perfilesDeUsuarios.monitor].includes(this.perfilActual)">
+                                                        <button pButton type="button"
+                                                                class="ui-button-raised ui-button-danger"
+                                                                icon="pi pi-times"
+                                                                (click)="eliminarResultadoLogrado(x)"></button>
+                                                    </td>
+                                                    <td align="center">
+                                                        {{ x + 1 }}
+                                                    </td>
+                                                    <td>
+                                                    <textarea class="form-control form-control-sm"
+                                                              [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                              [class.is-invalid]="resLog.cResultadoHito==null || resLog.cResultadoHito==''"
+                                                              [(ngModel)]="resLog.cResultadoHito"
+                                                              (change)="mayusculaAll('cResultadoHito', resLog, $event.target.value.toUpperCase())"
+                                                    ></textarea>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </p-accordionTab>
+
+                                <p-accordionTab
+                                    header=" 5. Riesgos para el cumplimiento de los indicadores durante el periodo">
+                                    <div class="row">
+                                        <div class="col-sm-12 table-responsive">
+                                            <table class="table table-hover table-bordered table-sm ">
+                                                <thead class="thead-dark">
+                                                <tr class="text-center">
+                                                    <th width="5px" *ngIf="(this.dataInfTec.iEstado == 0 || this.dataInfTec.iEstado == null) && ![this.perfilesDeUsuarios.monitor].includes(this.perfilActual)">
+                                                        <button pButton type="button"
+                                                                class="ui-button-raised ui-button-info"
+                                                                icon="pi pi-plus"
+                                                                (click)="agregarRiesgoIndicador()"></button>
+                                                    </th>
+                                                    <th>Descripción del Riesgo</th>
+                                                    <th width="80px">Estado Actual</th>
+                                                    <th>Acciones Tomadas</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr *ngFor="let riesgoInd of dataInfTec.riesgoIndicador; let x = index"
+                                                    (click)="modelos.sel_en_lista_rgInd = x"
+                                                    [class.table-warning]="((modelos.sel_en_lista_rgInd != null) && (modelos.sel_en_lista_rgInd == x))">
+                                                    <td class="text-center" *ngIf="(this.dataInfTec.iEstado == 0 || this.dataInfTec.iEstado == null) && ![this.perfilesDeUsuarios.monitor].includes(this.perfilActual)">
+                                                        <button pButton type="button"
+                                                                class="ui-button-raised ui-button-danger"
+                                                                icon="pi pi-times"
+                                                                (click)="eliminarRiesgoIndicador(x)"></button>
+                                                    </td>
+                                                    <td>
+                                                    <textarea class="form-control form-control-sm"
+                                                              [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                              [class.is-invalid]="riesgoInd.cRiesgoHito==null || riesgoInd.cRiesgoHito==''"
+                                                              [(ngModel)]="riesgoInd.cRiesgoHito"
+                                                              (change)="mayusculaAll('cRiesgoHito', riesgoInd, $event.target.value.toUpperCase())"
+                                                    ></textarea>
+                                                    </td>
+                                                    <td>
+                                                        <select [(ngModel)]="riesgoInd.iEstadoRiesgoId"
+                                                                [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                                class="form-control form-control-sm"
+                                                                [class.is-invalid]="riesgoInd.iEstadoRiesgoId==null || riesgoInd.iEstadoRiesgoId==''">
+                                                            <option
+                                                                *ngFor=" let opc of dataServidor.listaEstadoRiesgo"
+                                                                value="{{ opc.iEstadoRiesgoId }}">
+                                                                {{ opc.cEstadoRiesgo }} </option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                    <textarea class="form-control form-control-sm"
+                                                              [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                              [class.is-invalid]="riesgoInd.cAccionTomada==null || riesgoInd.cAccionTomada==''"
+                                                              [(ngModel)]="riesgoInd.cAccionTomada"
+                                                              (change)="mayusculaAll('cAccionTomada', riesgoInd, $event.target.value.toUpperCase())"
+                                                    ></textarea>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </p-accordionTab>
+
+                                <p-accordionTab
+                                    header=" 6. Otros problemas manifestados en el período del hito que no se encuentran en el documento de gestión, causas y consecuencias">
+                                    <div class="row">
+                                        <div class="col-sm-12 table-responsive">
+                                            <table class="table table-hover table-bordered table-sm ">
+                                                <thead class="thead-dark">
+                                                <tr class="text-center">
+                                                    <th width="5px" *ngIf="(this.dataInfTec.iEstado == 0 || this.dataInfTec.iEstado == null) && ![this.perfilesDeUsuarios.monitor].includes(this.perfilActual)">
+                                                        <button pButton type="button"
+                                                                class="ui-button-raised ui-button-info"
+                                                                icon="pi pi-plus"
+                                                                (click)="agregarOtroProblema('adm')"></button>
+                                                    </th>
+                                                    <th>Administrativo</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr *ngFor="let otroProb of dataInfTec.problemaHito; let x = index"
+                                                    (click)="modelos.sel_en_lista_otroProbAdm = x"
+                                                    [class.table-warning]="((modelos.sel_en_lista_otroProbAdm != null) && (modelos.sel_en_lista_otroProbAdm == x))">
+                                                    <td class="text-center"
+                                                        *ngIf="otroProb.iTipoObservacionId == 1 && (this.dataInfTec.iEstado == 0 || this.dataInfTec.iEstado == null) && ![this.perfilesDeUsuarios.monitor].includes(this.perfilActual)">
+                                                        <button pButton type="button"
+                                                                class="ui-button-raised ui-button-danger"
+                                                                icon="pi pi-times"
+                                                                (click)="eliminarOtroProblema('adm', x)"></button>
+                                                    </td>
+                                                    <td *ngIf="otroProb.iTipoObservacionId == 1">
+                                                    <textarea class="form-control form-control-sm"
+                                                              [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                              [class.is-invalid]="otroProb.cProblemaHito==null || otroProb.cProblemaHito==''"
+                                                              [(ngModel)]="otroProb.cProblemaHito"
+                                                              (change)="mayusculaAll('cProblemaHito', otroProb, $event.target.value.toUpperCase())"
+                                                    ></textarea>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-sm-12 table-responsive">
+                                            <table class="table table-hover table-bordered table-sm ">
+                                                <thead class="thead-dark">
+                                                <tr class="text-center">
+                                                    <th width="5px" *ngIf="(this.dataInfTec.iEstado == 0 || this.dataInfTec.iEstado == null) && ![this.perfilesDeUsuarios.monitor].includes(this.perfilActual)">
+                                                        <button pButton type="button"
+                                                                class="ui-button-raised ui-button-info"
+                                                                icon="pi pi-plus"
+                                                                (click)="agregarOtroProblema('tec')"></button>
+                                                    </th>
+                                                    <th>Técnico</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr *ngFor="let otroProb of dataInfTec.problemaHito; let y = index"
+                                                    (click)="modelos.sel_en_lista_otroProbTec = y"
+                                                    [class.table-warning]="((modelos.sel_en_lista_otroProbTec != null) && (modelos.sel_en_lista_otroProbTec == y))">
+                                                    <td class="text-center"
+                                                        *ngIf="otroProb.iTipoObservacionId == 2 && ((this.dataInfTec.iEstado == 0 || this.dataInfTec.iEstado == null) && ![this.perfilesDeUsuarios.monitor].includes(this.perfilActual))">
+                                                        <button pButton type="button"
+                                                                class="ui-button-raised ui-button-danger"
+                                                                icon="pi pi-times"
+                                                                (click)="eliminarOtroProblema('tec', y)"></button>
+                                                    </td>
+                                                    <td *ngIf="otroProb.iTipoObservacionId == 2">
+                                                    <textarea class="form-control form-control-sm"
+                                                              [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                              [class.is-invalid]="otroProb.cProblemaHito==null || otroProb.cProblemaHito==''"
+                                                              [(ngModel)]="otroProb.cProblemaHito"
+                                                              (change)="mayusculaAll('cProblemaHito', otroProb, $event.target.value.toUpperCase())"
+                                                    ></textarea>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-sm-12 table-responsive">
+                                            <table class="table table-hover table-bordered table-sm ">
+                                                <thead class="thead-dark">
+                                                <tr class="text-center">
+                                                    <th width="5px" *ngIf="(this.dataInfTec.iEstado == 0 || this.dataInfTec.iEstado == null) && ![this.perfilesDeUsuarios.monitor].includes(this.perfilActual)">
+                                                        <button pButton type="button"
+                                                                class="ui-button-raised ui-button-info"
+                                                                icon="pi pi-plus"
+                                                                (click)="agregarOtroProblema('finan')"></button>
+                                                    </th>
+                                                    <th>Financiero</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr *ngFor="let otroProb of dataInfTec.problemaHito; let z = index"
+                                                    (click)="modelos.sel_en_lista_otroProbFinan = z"
+                                                    [class.table-warning]="((modelos.sel_en_lista_otroProbFinan != null) && (modelos.sel_en_lista_otroProbFinan == z))">
+                                                    <td class="text-center"
+                                                        *ngIf="otroProb.iTipoObservacionId == 3 && ((this.dataInfTec.iEstado == 0 || this.dataInfTec.iEstado == null) && ![this.perfilesDeUsuarios.monitor].includes(this.perfilActual))">
+                                                        <button pButton type="button"
+                                                                class="ui-button-raised ui-button-danger"
+                                                                icon="pi pi-times"
+                                                                (click)="eliminarOtroProblema('finan', z)"></button>
+                                                    </td>
+                                                    <td *ngIf="otroProb.iTipoObservacionId == 3">
+                                                    <textarea class="form-control form-control-sm"
+                                                              [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                              [class.is-invalid]="otroProb.cProblemaHito==null || otroProb.cProblemaHito==''"
+                                                              [(ngModel)]="otroProb.cProblemaHito"
+                                                              (change)="mayusculaAll('cProblemaHito', otroProb, $event.target.value.toUpperCase())"
+                                                    ></textarea>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </p-accordionTab>
+
+                                <p-accordionTab
+                                    header=" 7. Implementación de recomendaciones de la última supervisión al proyecto por parte de VPI (DGI) según el acta de supervisión">
+                                    <div class="row">
+                                        <div class="col-sm-12 table-responsive">
+                                            <table class="table table-hover table-bordered table-sm ">
+                                                <thead class="thead-dark">
+                                                <tr class="text-center">
+                                                    <th>Fecha del Acta</th>
+                                                    <th width="80px">Lugar</th>
+                                                    <th>Tipo de Observación</th>
+                                                    <th>Recomendaciones Recibidas</th>
+                                                    <th>Acciones Tomadas</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr *ngFor="let obsHito of dataInfTec.observacionHito; let x = index"
+                                                    (click)="modelos.sel_en_lista_obsHito = x"
+                                                    [class.table-warning]="((modelos.sel_en_lista_obsHito != null) && (modelos.sel_en_lista_obsHito == x))">
+                                                    <td>
+                                                        {{ obsHito.dtFechaActa }}
+                                                    </td>
+                                                    <td>
+                                                        {{ obsHito.cLugar }}
+                                                    </td>
+                                                    <td>
+                                                        {{ obsHito.cTipoObservacion }}
+                                                    </td>
+                                                    <td>
+                                                        {{ obsHito.cRecomendacion }}
+                                                    </td>
+                                                    <td>
+                                                    <textarea class="form-control form-control-sm"
+                                                              [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                              [class.is-invalid]="obsHito.cResultado==null || obsHito.cResultado==''"
+                                                              [(ngModel)]="obsHito.cResultado"
+                                                              (change)="mayusculaAll('cResultado', obsHito, $event.target.value.toUpperCase())"
+                                                    ></textarea>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                </p-accordionTab>
+
+                                <p-accordionTab
+                                    header=" 8. Historial de observaciones reportadas al proyecto en los hitos evaluados">
+                                    <div class="row">
+                                        <div class="col-sm-12 table-responsive">
+                                            <table class="table table-hover table-bordered table-sm ">
+                                                <thead class="thead-dark">
+                                                <tr class="text-center">
+                                                    <th>Hito</th>
+                                                    <th>Fecha del Acta</th>
+                                                    <th width="80px">Lugar</th>
+                                                    <th>Tipo de Observación</th>
+                                                    <th>Recomendaciones Recibidas</th>
+                                                    <th>Resultados</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr *ngFor="let obsHitoEval of dataInfTec.observacionHitoEvaluado; let x = index"
+                                                    (click)="modelos.sel_en_lista_obsHito = x"
+                                                    [class.table-warning]="((modelos.sel_en_lista_obsHito != null) && (modelos.sel_en_lista_obsHito == x))">
+                                                    <td>
+                                                        {{ obsHitoEval.iNumeroHito }}
+                                                    </td>
+                                                    <td>
+                                                        {{ obsHitoEval.dtFechaActa }}
+                                                    </td>
+                                                    <td>
+                                                        {{ obsHitoEval.cLugar }}
+                                                    </td>
+                                                    <td>
+                                                        {{ obsHitoEval.cTipoObservacion }}
+                                                    </td>
+                                                    <td>
+                                                        {{ obsHitoEval.cRecomendacion }}
+                                                    </td>
+                                                    <td>
+                                                        {{ obsHitoEval.cResultado }}
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                </p-accordionTab>
+
+                                <p-accordionTab
+                                    header=" 9. Equipo Técnico del proyecto">
+                                    <div class="row">
+                                        <div class="col-sm-12 table-responsive">
+                                            <table class="table table-hover table-bordered table-sm ">
+                                                <thead class="thead-dark">
+                                                <tr class="text-center">
+                                                    <th>Nombre</th>
+                                                    <th>Cargo</th>
+                                                    <th>Profesión</th>
+                                                    <th>% de dedicación</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr *ngFor="let mb of dataInfTec.equipoTec; let x = index"
+                                                    (click)="modelos.sel_en_lista_obsHito = x"
+                                                    [class.table-warning]="((modelos.sel_en_lista_obsHito != null) && (modelos.sel_en_lista_obsHito == x))">
+                                                    <td>
+                                                        {{ mb.cPersDescripcion }}
+                                                    </td>
+                                                    <td>
+                                                        {{ mb.cTipoMiembroDescripcion }}
+                                                    </td>
+                                                    <td>
+                                                        {{ mb.cGrado }}
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                               [(ngModel)]="mb.nDedicacionPorcentaje"
+                                                               min=0 max=100 number [range]="[0, 100]" [min]="0"
+                                                               [max]="100"
+                                                               class="form-control form-control-sm"
+                                                               [class.is-invalid]="mb.nDedicacionPorcentaje==null || mb.nDedicacionPorcentaje==''"
+                                                               #nDedicacionPorcentaje="ngModel">
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                </p-accordionTab>
+                                <p-accordionTab
+                                    header=" 10. Conclusiones y Recomendaciones">
+                                    <div class="row">
+                                        <div class="col-sm-12 table-responsive">
+                                            <table class="table table-hover table-bordered table-sm ">
+                                                <thead class="thead-dark">
+                                                <tr class="text-center">
+                                                    <th>Conclusiones</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                         <textarea class="form-control form-control-sm"
+                                                                   [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                                   [class.is-invalid]="dataInfTec.cConclusion==null || dataInfTec.cConclusion==''"
+                                                                   [(ngModel)]="dataInfTec.cConclusion"
+                                                                   (change)="mayusculaAll('cConclusion', dataInfTec, $event.target.value.toUpperCase())"
+                                                         ></textarea>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-sm-12 table-responsive">
+                                            <table class="table table-hover table-bordered table-sm ">
+                                                <thead class="thead-dark">
+                                                <tr class="text-center">
+                                                    <th>Recomendaciones</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                         <textarea class="form-control form-control-sm"
+                                                                   [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"
+                                                                   [class.is-invalid]="dataInfTec.cRecomendacion==null || dataInfTec.cRecomendacion==''"
+                                                                   [(ngModel)]="dataInfTec.cRecomendacion"
+                                                                   (change)="mayusculaAll('cRecomendacion', dataInfTec, $event.target.value.toUpperCase())"
+                                                         ></textarea>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </p-accordionTab>
+
+                                <p-accordionTab
+                                    header=" 11. Anexos (fotos, tablas comparativas de datos, resultados de pruebas y ensayos, analíticas, separatas explicativas, resultados de las actividades realizadas por otros colaboradores, etc.)">
+                                    <div class="row">
+                                        <label
+                                            *ngIf="this.archivo.cArchivoAnexo !=='' && this.archivo.cArchivoAnexo !== null">
+                                            Archivo Guardado: </label>
+                                        <button pButton type="button"
+                                                *ngIf="this.archivo.cArchivoAnexo !=='' && this.archivo.cArchivoAnexo !== null"
+                                                label="{{this.archivo.cArchivoAnexo.replace('storage/inv/'+idProyecto+'/','')}}"
+                                                class="ui-button-rounded ui-button-danger" icon="pi pi-file-pdf"
+                                                (click)="mostrarPDF(modalPDF, this.archivo.cArchivoAnexo)"
+                                        ></button>
+                                        <div class="col-sm-12 table-responsive" [formGroup]="frmInfTecnico" *ngIf="(this.dataInfTec.iEstado == 0 || this.dataInfTec.iEstado == null) && ![this.perfilesDeUsuarios.monitor].includes(this.perfilActual)">
+                                            <global-file-upload formControlName="cArchivoAnexo"
+                                                                [extensionesPermitidas]="['pdf']"></global-file-upload>
+                                            <app-ht-form-errors
+                                                [control]="frmInfTecnicoControl.cArchivoAnexo"></app-ht-form-errors>
+                                        </div>
+                                    </div>
+                                </p-accordionTab>
+
+                                <p-accordionTab
+                                    header=" 12. Informe de Avance Financiero">
+                                    <div class="row">
+                                        <div class="col-sm-12 table-responsive">
+                                            <table class="table table-hover table-bordered table-sm ">
+                                                <thead class="thead-dark">
+                                                <tr class="text-center">
+                                                    <th width="30%">ITEMS FINANCIABLE</th>
+                                                    <th width="30%">DOCUMENTO DE GESTIÓN</th>
+                                                    <th width="30%">OBJETIVO LOGRADO</th>
+                                                    <th width="10%">MONTO</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <ng-container
+                                                    *ngFor="let avFinan of dataServidor.avFinanciero; let x = index">
+                                                    <tr>
+                                                        <td colspan="4" class="font-weight-bold">
+                                                            {{ avFinan.cRubroDescripcion }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr *ngFor="let det of avFinan.detalle; let y = index"
+                                                        (click)="modelos.sel_en_lista_obsHito = x + '' + y"
+                                                        [class.table-warning]="((modelos.sel_en_lista_obsHito != null) && (modelos.sel_en_lista_obsHito == x + '' + y))">
+                                                        <td colspan="4">
+                                                            <table class="table table-hover table-sm table-borderless m-0">
+                                                                <tr
+                                                                    [class.table-warning]="((modelos.sel_en_lista_obsHito != null) && (modelos.sel_en_lista_obsHito == x + '' + y))">
+                                                                    <td width="30%" class="border-right">
+                                                                        {{ y+1 + '. '+ det.cAccion }}
+                                                                    </td>
+                                                                    <td width="30%" class="border-right">
+                                                                        {{ det.cDocAprueba }}
+                                                                    </td>
+                                                                    <td width="30%" class="border-right">
+                                                                        {{ det.cObjetivo }}
+                                                                    </td>
+                                                                    <td width="10%" style="text-align: right">
+                                                                        {{ det.nGasto | number: '.2' }}
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+
+                                                        </td>
+
+                                                    </tr>
+                                                </ng-container>
+                                                </tbody>
+                                                <tr>
+                                                    <td colspan="3" class="font-weight-bold" style="text-align: right">TOTAL EJECUCIÓN</td>
+                                                    <td style="text-align: right">{{ this.totalEjecutado | number: '.2' }}</td>
+                                                </tr>
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <strong>Resumen de Ejecución Presupuestal</strong>
+                                        <div class="col-sm-12 table-responsive">
+                                            <table class="table table-hover table-bordered table-sm ">
+                                                <thead class="thead-dark">
+                                                <tr class="text-center">
+                                                    <th width="40%">ITEMS FINANCIABLES</th>
+                                                    <th width="20%">PRESUPUESTO ASIGNADO (S/)</th>
+                                                    <th width="20%">TOTAL EJECUTADO (S/)</th>
+                                                    <th width="20%">PRESUPUESTO PENDIENTE (S/)</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let resEjeP of dataServidor.resumenEjecPres; let x = index"
+                                                        (click)="modelos.sel_en_lista_resEjeP = x"
+                                                        [class.table-warning]="((modelos.sel_en_lista_resEjeP != null) && (modelos.sel_en_lista_resEjeP == x))">
+
+                                                    <td class="font-weight-bold">{{ resEjeP.cRubroDescripcion}}</td>
+                                                        <td style="text-align: right">{{ resEjeP.totalPresupuesto | number: '.2'}}</td>
+                                                        <td style="text-align: right">{{ resEjeP.totalGasto | number: '.2'}}</td>
+                                                        <td style="text-align: right">{{ resEjeP.saldo | number: '.2'}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-sm-12"><strong>Avance Presupuestal % = </strong>({{this.totalPreEjec}} / {{this.totalPreAsig}}) * 100</div>
+                                        <div class="col-sm-12" *ngIf="this.totalPreAsig !== 0 "><strong>Avance Presupuestal % = </strong>{{( this.totalPreEjec / this.totalPreAsig ) * 100}}</div>
+                                    </div>
+                                </p-accordionTab>
+                            </p-accordion>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="(this.dataInfTec.iEstado == 0 || this.dataInfTec.iEstado == null) && ![this.perfilesDeUsuarios.monitor].includes(this.perfilActual)">
+                <div class="modal-footer">
+                    <!--<p-splitButton label="Exportar" icon="pi pi-download" [model]="itemsExp" styleClass="ui-button-success"></p-splitButton>-->
+                    <button pButton type="button" label="Guardar" class="ui-button-raised" (click)="guardar('infTec')"
+                            [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"></button>
+                    <button pButton type="button" label="Cancelar" class="ui-button-raised ui-button-warning"
+                            (click)="cancelar()" [disabled]="[1,2].includes(this.dataInfTec.iEstado) || [this.perfilesDeUsuarios.monitor].includes(this.perfilActual)"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #modalPDF let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Documento del Proyecto</h4>
+        <button type="button" class="close" aria-label="Close button" aria-describedby="modal-title"
+                (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body row my-class">
+        <div class="col-md-12 justify-content-center align-items-center">
+            <global-embed-pdf class="pdf_viewer" [src]="pdfActual"></global-embed-pdf>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary btn-rounded"
+                (click)="modal.dismiss('cancel'); cerrarPDF();">Salir
+        </button>
+    </div>
+</ng-template>

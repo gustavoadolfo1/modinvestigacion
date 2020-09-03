@@ -1,0 +1,44 @@
+<div class="card o-hidden custom"
+     [@animate]="{value:'*',params:{y:'120px',opacity:'0',delay:'100ms', duration: '400ms'}}">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="p-4">
+                <div class="auth-logo text-center mb-4">
+                    <img src="assets/images/logo.png" alt="">
+                </div>
+                <h1 class="mb-3 text-18">Contraseña Olvidada</h1>
+                <form [formGroup]="frmRecuperar" (submit)="enviarSolicitud()">
+                    <div class="form-group" *ngIf="!retToken">
+                        <label for="dni">Usuario / DNI</label>
+                        <input id="dni" class="form-control form-control-rounded" type="text" formControlName="dni">
+                        <app-ht-form-errors [control]="frmRecuperarontrol.dni"></app-ht-form-errors>
+                    </div>
+                    <div class="form-group" *ngIf="retToken"
+                         ngbTooltip="Código enviado al celular o al correo electrónico">
+                        <label for="token">Token</label>
+                        <input id="token" class="form-control form-control-rounded" type="text" formControlName="token">
+                        <app-ht-form-errors [control]="frmRecuperarontrol.token"></app-ht-form-errors>
+                    </div>
+                    <div class="form-group"  *ngIf="retToken">
+                        <label for="new_password">Contraseña Nueva</label>
+                        <input id="new_password" type="password" class="form-control form-control-rounded"
+                               formControlName="new_password">
+                        <app-ht-form-errors [control]="frmRecuperarontrol.new_password"></app-ht-form-errors>
+                    </div>
+                    <div class="form-group" *ngIf="retToken">
+                        <label for="re_new_password">Volver a Escribir Contraseña Nueva</label>
+                        <input id="re_new_password" type="password" class="form-control form-control-rounded"
+                               formControlName="re_new_password">
+                        <app-ht-form-errors [control]="frmRecuperarontrol.re_new_password"></app-ht-form-errors>
+                    </div>
+
+                    <button
+                        class="btn btn-primary btn-block btn-rounded mt-3">{{(retToken ? 'Restaurar Contraseña' : 'Solicitar Token')}}</button>
+                </form>
+                <div class="mt-3 text-center">
+                    <a href="" class="text-muted" routerLink="/sesion/inicio"><u>Iniciar Sesión</u></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

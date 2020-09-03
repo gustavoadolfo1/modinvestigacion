@@ -1,0 +1,133 @@
+<div class="list-item">
+    <a routerLink="/investigacion/gestion">
+        <button pButton type="button" icon="pi pi-angle-left" label="Seguir Gestionando Proyecto"></button>
+        <!-- this.router.navigate(['/investigacion/gestion']); -->
+    </a>
+</div>
+
+<div class="separator-breadcrumb border-top"></div>
+
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white text-center">
+                INFORME FINAL
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-2 mb-4">
+                        <b>PROYECTO:</b>
+                    </div>
+                    <div class="col-sm-10 mb-4">
+                        {{ this.nomProyecto }}
+                    </div>
+                    <div class="col-sm-12 pricingdiv">
+                        <ul class="theplan" *ngFor="let data of dataServidor.mostrarLista ; index as i">
+                            <li class="title inf-danger"
+                                *ngIf="verificaFechaPresentacion( data.dtFechaInicio, data.dtFechaFin, data.iEstado) == 'r'">
+                                <b>{{data.cTipoInforme}} Informe Final{{data.iNumeroInforme}}</b></li>
+                            <li class="title inf-normal"
+                                *ngIf="verificaFechaPresentacion( data.dtFechaInicio, data.dtFechaFin, data.iEstado) == 'a'">
+                                <b>{{data.cTipoInforme}} Informe Final{{data.iNumeroInforme}}</b></li>
+                            <li class="title inf-danger"
+                                *ngIf="verificaFechaPresentacion( data.dtFechaInicio, data.dtFechaFin, data.iEstado) == 'v'">
+                                <b>{{data.cTipoInforme}} Informe Final{{data.iNumeroInforme}}</b></li>
+                            <li><b>Fecha Inicio:</b><ng-container *ngIf="data.dtFechaInicio !== null">  {{ data.dtFechaInicio |date:"short"}} </ng-container></li>
+                            <li><b>Fecha de Entrega:</b> <ng-container *ngIf="data.dtFechaFin !== null"> {{ data.dtFechaFin |date:"short"}} </ng-container></li>
+                            <li><b>Presentado:</b> <ng-container *ngIf="data.dtFechaInf !== null">{{data.dtFechaInf |date:"short"}} </ng-container></li>
+
+                            <li><b>Archivo:</b> <ng-container *ngIf="data.cArchivoInf !== null"> {{data.cArchivoInf.replace('storage/inv/'+this.idProyecto+'/','')}}</ng-container> </li>
+                            <li><b>Presentado:</b> {{data.iEstado}} </li>
+                            <li ><b>Aceptado:</b> <ng-container *ngIf="data.iInfSistAceptada == 1"> Si</ng-container> </li>
+                            <li class="subtitle"><b>Informacion segun Sistema</b></li>
+                            <li><b>Presupuesto:</b> {{data.nPresupuestoProyecto |number:".2"}} </li>
+                            <li><b>Ppto. en Rubros:</b> {{data.nPresupuestoRubros |number:".2"}} </li>
+                            <li><b>Ppto Disponible:</b> {{data.nPresupuestoDisponible |number:".2"}} </li>
+                            <li><b>Ppto Ejecutado:</b> {{data.nPresupuestoEjecutado |number:".2"}} </li>
+                            <li><b>% Avance Presupuestal:</b> {{data.nPresupuestoPorcAvance |number:".2"}} </li>
+                            <li><b>% Avance Tecnico:</b> {{data.nPorcAvanceTenico |number:".2"}} </li>
+                            <li>
+                                <button pButton type="button" label="Agregar Entrega"
+                                        *ngIf="data.iEstado == 0 || data.iEstado == null" type="button"
+                                        (click)="llamarAccion(['agregarEntrega', modalInformeProyecto, data])"
+                                ></button>
+                                <button pButton type="button" label="Ver Archivo" class="ui-button-danger"
+                                        *ngIf="data.iEstado == 1" type="button"
+                                        (click)="mostrarPDF(modalPDF, data.cArchivoInf)"
+                                ></button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #modalInformeProyecto let-modal>
+    <div class="modal-header ht-modal-header">
+        <div class="modal-title">
+            <h4>{{imprimir.modalTitulo}}</h4>
+        </div>
+    </div>
+    <form [formGroup]="frmInformeProyecto" (ngSubmit)="enviarFormulario('mantenimiento_informe_final')">
+        <div class="modal-body row" style="margin: 2px;">
+            <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-sm-12 mb-3">
+                        <label>Archivo del Informe</label>
+                        <global-file-upload formControlName="cArchivoInf"
+                                            [extensionesPermitidas]="['pdf']"></global-file-upload>
+                        <app-ht-form-errors
+                            [control]="frmInformeProyectoControl.cArchivoInf"></app-ht-form-errors>
+                    </div>
+                    <div *ngFor="let data of dataServidor.mostrarAvancePresupuestal ; index as i">
+                        <h4>INFORMACION REGISTRADA EN EL SISTEMA:</h4>
+                        <b>Presupuesto del Proyecto:</b> S/ {{data.nPresupuestoProyecto}}<br>
+                        <b>Asignado a Rubros de Gasto:</b> S/ {{data.totalPresupuesto}}<br>
+                        <b>Presupuesto Disponible:</b> S/ {{data.saldo}}<br>
+                        <b>Presupuesto Ejecutado:</b> S/ {{ data.totalGasto }}<br>
+                        <b>% Avance Presupuestal::</b>{{ data.avance }}%<br>
+                        <b>% Avance Tecnico::</b>{{ data.nPorcAvanceTenico }}%<br>
+                    </div>
+                    <div class="ui-g-12">
+                        <p-checkbox value="1" label=''
+                                    formControlName="iInfSistAceptada"
+                                    ></p-checkbox> Acepto con carácter de Declaración Jurada que:
+                        "La información del archivo adjunto coincide con la registrada en el sistema."
+                        <app-ht-form-errors
+                            [control]="frmInformeProyectoControl.iInfSistAceptada"></app-ht-form-errors>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button pButton type="button" label="Guardar" class="ui-button-raised"
+                    (click)="enviarFormulario('mantenimiento_informe_final')"></button>
+            <button pButton type="button" label="Cancelar" class="ui-button-raised ui-button-warning"
+                    (click)="modal.dismiss('cancel'); limpiarFormulario();"></button>
+        </div>
+    </form>
+</ng-template>
+
+
+<ng-template #modalPDF let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Documento Sustentatorio del Avance Tecnico</h4>
+        <button type="button" class="close" aria-label="Close button" aria-describedby="modal-title"
+                (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body row">
+        <div class="col-md-12 justify-content-center align-items-center">
+            <global-embed-pdf class="pdf_viewer" [src]="pdfActual"></global-embed-pdf>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary btn-rounded"
+                (click)="modal.dismiss('cancel'); cerrarPDF();">Salir
+        </button>
+    </div>
+</ng-template>

@@ -1,0 +1,195 @@
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white text-center">
+                MONITORES
+            </div>
+            <div class="card-body">
+                <div class="col-md-12 mb-2">
+                    <div class="row">
+                        <div class="col-sm-2 mb-4">
+                            <b>PROYECTO:</b>
+                        </div>
+                        <div class="col-sm-10 mb-4">
+                            {{ this.nomProyecto }}
+                        </div>
+                        <div class="col-md-12 mb-2">
+
+
+                            <div class="col-md-2 form-group mb-2">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary btn-sm" type="button"
+                                            [disabled]="(dataExtraProyecto.miembros.length > 0)"
+                                            (click)="llamarAccion(['nuevo', modalAgregarMonitores])">
+                                        <i class="icon-regular i-Add-User"></i> Añadir Nuevo Monitor
+                                    </button>
+
+                                </div>
+                            </div>
+
+                            <!-- </div>-->
+                            <div class="row">
+                                <div class="col-sm-12 table-responsive">
+                                    <table class="table table-hover table-bordered table-sm ">
+                                        <thead class="thead-dark">
+                                        <tr class="text-center">
+                                            <th width="5px">#</th>
+                                            <th width="">Datos</th>
+                                            <th width="">Grado</th>
+                                            <th width="">Teléfono</th>
+                                            <th width="">Correo</th>
+                                            <th width="">Doc. de Asignación</th>
+                                            <th width="">Fecha de Asignación</th>
+                                            <th width="">Estado</th>
+                                            <th width="">Eliminar</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr *ngFor="let data of dataServidor.mostrarLista ; index as i"
+                                            (click)="modelos.sel_en_lista = data"
+                                            [class.table-warning]="((modelos.sel_en_lista != null) && (modelos.sel_en_lista.iMonitorId == data.iMonitorId))">
+                                            <td>{{(i + 1)}}</td>
+
+                                            <td>{{data.cPersPaterno}} {{data.cPersMaterno}} {{data.cPersNombre}} </td>
+                                            <td>{{data.cGrado}}</td>
+                                            <td>{{data.cTelefonoMovil}}</td>
+                                            <td>{{data.cCorreoElectronico}}</td>
+                                            <td>{{data.cDocAsignacion}}</td>
+                                            <td class="text-center">{{data.dtFechaAsignacion|date: 'dd/MM/yyyy'}}</td>
+                                            <td class="text-center">
+                                                <app-ht-font-awesome name="circle" *ngIf="data.cEstadoMonitor == '1' "
+                                                                     style="color : green;"></app-ht-font-awesome>
+                                                <app-ht-font-awesome name="circle" *ngIf="data.cEstadoMonitor !== '1' "
+                                                                     style="color : red;"></app-ht-font-awesome>
+                                            </td>
+
+                                            <td class="text-center">
+                                                <button class="btn btn-sm btn-outline-info" ngbTooltip="Editar"
+                                                        (click)="llamarAccion(['editar', modalAgregarMonitores, data])">
+                                                    <app-ht-font-awesome name="edit"></app-ht-font-awesome>
+                                                </button>
+                                                <div class="btn-group float-right" role="group" aria-label="---">
+                                                    <button class="btn btn-sm btn-outline-warning"
+                                                            (click)="llamarAccion(['cambiar_estado', modalPersona, data])">
+                                                        <app-ht-font-awesome name="refresh"></app-ht-font-awesome>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <pagination-controls (pageChange)="p = $event" previousLabel="Anterior"
+                                                         nextLabel="Siguiente"></pagination-controls>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #modalAgregarMonitores let-modal>
+    <form [formGroup]="frmAgregarMonitor"
+          (ngSubmit)="accModalAgregarMiembro('agregar')">
+        <div class="modal-body row" style="margin: 2px;">
+
+            <div class="col-md-12 form-group mb-2 pb-2">
+                <div class="input-group  input-group-sm">
+                    <input type="text" placeholder="Par Evaluador"
+                           class="form-control form-control-sm"
+                           formControlName="valBuscMonitor"/>
+                    <!-- (keydown.enter)="abrirMiembroModal(1, modalPersona)"-->
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary btn-sm"
+                                type="button"
+                                (click)="abrirMonitorModal(1, modalPersona)">
+                            <i class="icon-regular i-Find-User"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-md-12 form-group mb-2">
+                <label>Nombres y Apellidos</label>
+                <input type="text" disabled class="form-control form-control-sm"
+                       formControlName="txtNomApeMonitor">
+            </div>
+
+            <div class="col-md-6 form-group mb-2">
+                <label>Fecha de Asignación</label>
+                <input type="date" class="form-control form-control-sm"
+                       formControlName="dtFechaAsignacion">
+            </div>
+            <div class="col-md-6 form-group mb-2">
+                <label>Documento de Asignacion</label>
+                <input type="text" class="form-control form-control-sm"
+                       formControlName="cDocAsignacion">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button pButton type="button" label="Guardar" class="ui-button-raised"
+                    (click)="guardarMonitor();"></button>
+            <button pButton type="button" label="Cancelar" class="ui-button-raised ui-button-warning"
+                    (click)="modal.dismiss('cancel')"></button>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #modalPersona let-modal>
+    <div class="modal-body row" style="margin: 2px;">
+
+        <div class="col-sm-12">
+            <div class="content">
+
+                <!----------aqui guardo una tabla---->
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Tipo</th>
+                        <th scope="col">N° Documento</th>
+                        <th scope="col">Datos</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr *ngFor="let regPer of dataServidor.listaMiembros | paginate: { itemsPerPage: 25, currentPage: p }; let i = index"
+                        (dblclick)="modal.close('seleccionar')"
+                        (click)="seleccionarMonitor(regPer, i);
+                        modelos.sel_en_lista_persona = regPer.iMonitorId"
+                        [class.table-active]="i == pers_seleccionada.i"
+                        [class.table-warning]="((modelos.sel_en_lista_persona != null) && (modelos.sel_en_lista_persona == regPer.iMonitorId))"
+                    >
+                        <th scope="row">{{i + 1}}</th>
+                        <td>{{ regPer.cTipoPersDescripcion }}</td>
+                        <td>{{ regPer.cTipoIdentSigla }} {{ regPer.cPersDocumento }}</td>
+                        <td>{{ regPer.cPersDescripcion }}</td>
+                    </tr>
+                    </tbody>
+
+                </table>
+
+                <pagination-controls (pageChange)="p = $event"
+                                     previousLabel="Anterior"
+                                     nextLabel="Siguiente">
+                </pagination-controls>
+            </div><!-- /.content -->
+        </div><!-- /.col-* -->
+
+
+    </div>
+
+    <!-----------------------------footer para  guardar------------------------------------------------------------------>
+    <div class="modal-footer">
+        <button pButton type="button" label="seleccionar" class="ui-button-raised"
+                (click)="modal.close('seleccionar')"></button>
+        <button pButton type="button" label="Cancelar" class="ui-button-raised ui-button-warning"
+                (click)="modal.dismiss('cancel')"></button>
+    </div>
+</ng-template>

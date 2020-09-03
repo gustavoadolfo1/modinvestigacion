@@ -1,0 +1,318 @@
+<div class="list-item">
+    <a routerLink="/investigacion/gestion">
+        <button pButton type="button" icon="pi pi-angle-left" label="Seguir Gestionando Proyecto"></button>
+        <!-- this.router.navigate(['/investigacion/gestion']); -->
+    </a>
+</div>
+
+<div class="separator-breadcrumb border-top"></div>
+
+<div class="row justify-content-center">
+    <!--<form [formGroup]="frmAvanceTecnico" (ngSubmit)="enviarFormulario('mantenimiento_avance_tecnico')">-->
+
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white text-center">
+                    AVANCE PORCENTUAL POR ACTIVIDADES
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-2 mb-4">
+                            <b>PROYECTO:</b>
+                        </div>
+                        <div class="col-sm-10 mb-4">
+                            {{ this.nomProyecto }}
+                        </div>
+                        <div class="col-sm-12 table-responsive">
+                            <table class="table table-hover table-bordered table-sm ">
+                                <thead class="thead-dark">
+                                <tr class="text-center">
+                                    <th>#</th>
+                                    <th>Actividad Programada</th>
+                                    <th>Cantidad</th>
+                                    <th>%</th>
+                                    <th>Avance Cantidad</th>
+                                    <th>%</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let data of this.dataAvTecProyecto.actividades ; index as i"
+                                    (click)="modelos.sel_en_lista = data"
+                                    [class.table-warning]="((modelos.sel_en_lista != null) && (modelos.sel_en_lista.iActividadId == data.iActividadId))">
+                                    <td>{{(i + 1)}}</td>
+
+                                    <td>{{data.cActividadDescripcion}}</td>
+                                    <td class="text-center">
+                                        <input type="hidden"  [(ngModel)]="data.iActividadId" [disabled]="this.enable.iActividadId">
+                                        <input type="number" [(ngModel)]="data.iCantidad" [disabled]="this.enable.iCantidad" min="0"
+                                               max="100" maxlength="2">
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="number" [(ngModel)]="data.nCantPorcentaje" [disabled]="this.enable.nCantPorcentaje" min="0"
+                                               max="100" maxlength="2" (ngModelChange)="editCantCalculoPorcentaje(data)">
+                                    </td>
+                                    <td style="text-align: right">
+                                        {{data.iAvanceCantidad | number:'.2'}}
+                                    </td>
+                                    <td style="text-align: right">
+                                        {{data.nAvanceCantidadPorcentaje | number:'.2'}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3">&nbsp;</td>
+                                    <td class="text-center"> {{ this.totalPorcentajeCantidad |number:'.2' }} </td>
+                                    <td></td>
+                                    <td style="text-align: right"> {{ this.totalPorcentajeAvance |number: '.2' }} </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <ng-container *ngIf="editandoPlanAvanTec">
+                            <div class="col-md-12 form-group mb-3">
+                                <label class="checkbox mat-checkbox">
+                                    <input type="checkbox" [(ngModel)]="this.porcentajeAutomatico"
+                                           [checked]="this.valCheckbox" (ngModelChange)="calculoPorcentaje()">
+                                    <span class="checkmark"></span>
+                                    <label>Asignar Porcentaje Automático </label>
+                                </label>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <div class="modal-footer" *ngIf="[this.perfilesDeUsuarios.oficina].includes(this.perfilActual) || this.primerRegistro">
+                        <ng-container *ngIf="!editandoPlanAvanTec">
+                            <button pButton type="button" label=" Registrar Planificacion de Avance" class="ui-button-success" (click)="llamarAccion(['registrarPlanAvanceTecnico'])"
+                            ></button>
+                        </ng-container>
+                        <ng-container *ngIf="editandoPlanAvanTec">
+                            <button pButton type="button" label="Guardar" class="ui-button-raised" (click)="llamarAccion(['guardarPlanAvanceTecnico'])"
+                            ></button>
+                            <button pButton type="button" label="Cancelar" class="ui-button-raised ui-button-warning" (click)="llamarAccion(['cancelarPlanAvanceTecnico'])"
+                            ></button>
+                        </ng-container>
+                    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+                    <div class="row" *ngIf="verDetalle">
+                        <div class="modal-title">
+                            <h5>{{ this.imprimir.detalleTitulo }}</h5>
+                            <h5>{{ this.imprimir.detalle2Titulo }}</h5>
+                        </div>
+                        <div class="col-sm-12 table-responsive">
+                            <table class="table table-hover table-bordered table-sm ">
+                                <thead class="thead-dark">
+                                <tr class="text-center">
+                                    <th>#</th>
+                                    <th>Dentro de Fecha</th>
+                                    <th>Fecha Programada</th>
+                                    <th>Fecha Avance Tecnico</th>
+                                    <th>Cantidad Avance</th>
+                                    <th>Observación</th>
+                                    <th>Doc Sustentatorio</th>
+                                    <th width="10px"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let data of dataServidor.mostrarListaDetalle ; index as i"
+                                    (click)="modelos.sel_en_lista = data"
+                                    [class.table-warning]="((modelos.sel_en_lista != null) && (modelos.sel_en_lista.iAvanTecDetId == data.iAvanTecDetId))">
+                                    <td>{{(i + 1)}}</td>
+                                    <td class="text-center">
+                                        <app-ht-font-awesome name="circle" *ngIf="data.cFueraFecha == 'S' " style="color : red;"></app-ht-font-awesome>
+                                        <app-ht-font-awesome name="circle" *ngIf="data.cFueraFecha !== 'S' " style="color : green;"></app-ht-font-awesome>
+                                    </td>
+                                    <td>{{data.cCaleAnyo}} - {{data.cCaleMes}}</td>
+                                    <td>{{data.dtAvanceTecnico}}</td>
+                                    <td>{{data.iAvanceCantidad}}</td>
+                                    <td>{{data.cObservacion}}</td>
+                                    <td class="text-center">
+                                        <button *ngIf="data.cArchivoDocSus" type="button"
+                                                class="btn btn-outline-danger"
+                                                (click)="mostrarPDF(modalPDF, data.cArchivoDocSus)">
+                                            <app-ht-font-awesome name="file-pdf-o"></app-ht-font-awesome>
+                                            PDF
+                                        </button>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group float-right" role="group" aria-label="---">
+                                            <button class="btn btn-sm btn-outline-info" ngbTooltip="Editar"
+                                                    (click)="llamarAccion(['editarAvanceTecnico', modalAvanceTecnicoDetalle, data])">
+                                                <app-ht-font-awesome name="edit"></app-ht-font-awesome>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger"
+                                                    (click)="llamarAccion(['eliminarAvanceTecnico', modalAvanceTecnicoDetalle, data])">
+                                                <app-ht-font-awesome name="trash"></app-ht-font-awesome>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+</div>
+
+
+<ng-template #modalAvanceTecnicoDetalle let-modal>
+    <div class="modal-header ht-modal-header">
+        <div class="modal-title">
+            <h4>{{ this.imprimir.modalTitulo }}</h4>
+        </div>
+    </div>
+    <form [formGroup]="frmAvanceTecnicoDetalle" (ngSubmit)="enviarFormulario('mantenimiento_avance_tecnico_detalle')">
+        <div class="modal-body row" style="margin: 2px;">
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-md-6 form-group mb-2">
+                        <label>Año</label>
+                        <ng-select [items]="dataServidor.listaAnyo"
+                                   [virtualScroll]="true"
+                                   [loading]="loading"
+                                   bindLabel="cCaleAnyo"
+                                   bindValue="cCaleAnyo"
+                                   placeholder="Seleccionar..."
+                                   formControlName="idAnyo"
+                                   class="frm-peque"
+                                   [clearable]="false"
+                                   (ngModelChange)="mostrarMes()"
+                        >
+                        </ng-select>
+                        <app-ht-form-errors [control]="frmAvanceTecnicoDetalleControl.idAnyo"></app-ht-form-errors>
+                    </div>
+                    <div class="col-md-6 form-group mb-2">
+                        <label>Mes</label>
+                        <ng-select [items]="dataServidor.listaMes"
+                                   [virtualScroll]="true"
+                                   [loading]="loading"
+                                   bindLabel="cMonthNombre"
+                                   bindValue="cCaleMes"
+                                   placeholder="Seleccionar..."
+                                   formControlName="idMes"
+                                   class="frm-peque"
+                                   [clearable]="false"
+                                   (ngModelChange)="llenarDatosAdic()"
+                        >
+                        </ng-select>
+                        <app-ht-form-errors [control]="frmAvanceTecnicoDetalleControl.idMes"></app-ht-form-errors>
+                    </div>
+
+
+                    <div class="col-sm-12 mb-3">
+                        <label>Cantidad del Avance</label>
+                        <input type="text" class="form-control mb-3"
+                               formControlName="avanceCantidad"
+                        >
+                        <app-ht-form-errors
+                            [control]="frmAvanceTecnicoDetalleControl.avanceCantidad"></app-ht-form-errors>
+                    </div>
+                    <div class="col-sm-12 mb-3">
+                        <label>Documento Sustentatorio</label>
+                        <input type="text" class="form-control mb-3" formControlName="docSustentatorio">
+                        <app-ht-form-errors
+                            [control]="frmAvanceTecnicoDetalleControl.docSustentatorio"></app-ht-form-errors>
+                    </div>
+                    <div class="col-sm-12 mb-3">
+                        <label>Archivo del Documento sustentatorio</label>
+                        <global-file-upload formControlName="archivoDocSus"
+                                            [extensionesPermitidas]="['pdf']"></global-file-upload>
+                        <app-ht-form-errors
+                            [control]="frmAvanceTecnicoDetalleControl.archivoDocSus"></app-ht-form-errors>
+                    </div>
+                    <div class="col-sm-12 mb-3">
+                        <label>Observación</label>
+                        <input type="text" class="form-control mb-3"
+                               (change)="frmAvanceTecnicoDetalleControl.observacion.setValue($event.target.value.toUpperCase())"
+                               formControlName="observacion"
+                        >
+                        <app-ht-form-errors
+                            [control]="frmAvanceTecnicoDetalleControl.observacion"></app-ht-form-errors>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary"
+                    (click)="modal.dismiss('cancel'); limpiarFormulario();">Cancela
+            </button>
+            <button class="btn primary" type="submit"
+                    [disabled]="(!frmAvanceTecnicoDetalle.valid || enviandoFormulario)"
+            >Guardar
+            </button>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #modalFiltroBusqueda let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title"><i class="i-Mail-Send" style="font-size: 1.5em"></i> &nbsp;&nbsp; Seguimiento del
+            Documento</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body row">
+        <div class="col-sm-12 mb-2">
+            <app-ht-filtro-busqueda _tipo="buscar_tramite" [_opciones]="[1,2,3]" [_opcionDefault]="1"
+                                    [_idDependencia]="_dataService.getOption().ofSeleccionada.iDepenId"
+                                    (resultados)="retornoLista($event)"></app-ht-filtro-busqueda>
+        </div>
+        <div class="col-sm-12">
+            <div class="form-inline">
+                <b>Ordenar por: &nbsp;</b>
+                <select class="form-control form-control-sm">
+                    <option [value]="1">Destinatario</option>
+                    <option [value]="2">Nro de Registro</option>
+                    <option [value]="3">Nro de Documento</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click'); modalAbierto = false;">
+            Cerrar
+        </button>
+        <button type="button" class="btn btn-outline-success" (click)="exportarArchivo('excel')">
+            <app-ht-font-awesome name="file-excel-o"></app-ht-font-awesome>
+            Excel
+        </button>
+        <button type="button" class="btn btn-outline-danger" (click)="exportarArchivo('pdf', modalPDF)">
+            <app-ht-font-awesome name="file-pdf-o"></app-ht-font-awesome>
+            PDF
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #modalPDF let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Documento Sustentatorio del Avance Tecnico</h4>
+        <button type="button" class="close" aria-label="Close button" aria-describedby="modal-title"
+                (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body row">
+        <div class="col-md-12 justify-content-center align-items-center">
+            <global-embed-pdf class="pdf_viewer" [src]="pdfActual"></global-embed-pdf>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary btn-rounded"
+                (click)="modal.dismiss('cancel'); cerrarPDF();">Salir
+        </button>
+    </div>
+</ng-template>

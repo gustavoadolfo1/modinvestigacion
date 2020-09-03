@@ -1,0 +1,12 @@
+th.rotate {
+    vertical-align: bottom;
+    height: 110px;
+    white-space: nowrap;
+    // Firefox needs the extra DIV for some reason, otherwise the text disappears if you rotate
+    > div {
+        transform:
+            rotate(270deg);
+        width: 10px;
+        float: right;
+    }
+}

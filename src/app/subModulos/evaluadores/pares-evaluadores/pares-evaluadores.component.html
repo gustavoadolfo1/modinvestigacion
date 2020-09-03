@@ -1,0 +1,250 @@
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white text-center">
+                EVALUACIONES
+            </div>
+            <div class="card-body">
+                <div class="col-md-12 mb-2">
+                    <div class="row">
+                        <div class="col-sm-2 mb-4">
+                            <b>PROYECTO:</b>
+                        </div>
+                        <div class="col-sm-10 mb-4">
+                            {{ this.nomProyecto }}
+                        </div>
+
+
+                        <div class="col-md-12 mb-2">
+
+                            <ngb-tabset [justify]="'justified'">
+                                <ngb-tab id="configTab1"
+                                         *ngIf="[ _constantes.perfilesDeUsuarios.oficina].includes(store.getItem('perfilSeleccionado'))">
+                                    <ng-template ngbTabTitle>
+
+                                        Asignar Evaluador
+                                    </ng-template>
+
+                                    <ng-template ngbTabContent>
+
+                                       <!-- <div [style.visibility]="isVisibleDiv ? 'visible' : 'hidden'">-->
+
+                                            <div class="col-md-2 form-group mb-2">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary btn-sm" type="button"
+                                                            [disabled]="(dataExtraProyecto.miembros.length > 0)"
+                                                            (click)="abrirModal(modalAgregarMiembros)">
+                                                        <i class="icon-regular i-Add-User"></i> Añadir Par
+                                                        Evaluador
+                                                    </button>
+
+                                                </div>
+                                            </div>
+
+                                       <!-- </div>-->
+
+                                        <!--------resultados de select nomas--->
+                                        <div class="col-sm-12 table-responsive">
+                                            <table class="table table-hover table-bordered table-sm ">
+                                                <thead class="thead-dark">
+
+                                                <tr class="text-center">
+                                                    <th width="5px">#</th>
+
+                                                    <th width="20px">Regina</th>
+                                                    <th width="30px">Datos</th>
+
+                                                    <th width="10px">Linea Investigacion</th>
+                                                    <th width="10px">telefono</th>
+                                                    <th width="10px">correo</th>
+                                                    <th width="10px">Eliminar</th>
+                                                </tr>
+
+                                                </thead>
+
+                                                <tbody>
+                                                <tr *ngFor="let data of dataServidor.mostrarLista ; index as i"
+                                                    (click)="modelos.sel_en_lista = data"
+                                                    [class.table-warning]="((modelos.sel_en_lista != null) && (modelos.sel_en_lista.iParesEvaluadoresId == data.iParesEvaluadoresId))">
+
+                                                    <td>{{(i + 1)}}</td>
+
+                                                    <td>{{data.cRegina}}</td>
+                                                    <td>{{data.cPersNombre}} {{data.cPersPaterno}} {{data.cPersMaterno}}</td>
+                                                    <td>{{data.cLineaInvestigacion}}</td>
+                                                    <td>{{data.cTelefonoMovil}}</td>
+                                                    <td>{{data.cCorreoElectronico}}</td>
+                                                    <td class="text-center">
+                                                        <div class="btn-group float-right" role="group" aria-label="---">
+                                                            <button class="btn btn-sm btn-outline-danger"
+                                                                    (click)="llamarAccion(['eliminar', modalPersona, data])">
+                                                                <app-ht-font-awesome name="trash"></app-ht-font-awesome>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+
+
+                                                </tr>
+
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+
+                                        <ng-template #modalPersona let-modal>
+                                            <div class="modal-body row" style="margin: 2px;">
+
+                                                <div class="col-sm-12">
+                                                    <div class="content">
+
+                                                        <!----------aqui guardo una tabla---->
+                                                        <table class="table table-bordered table-striped table-hover">
+                                                            <thead class="thead-dark">
+                                                            <tr>
+                                                                <th scope="col">#</th>
+                                                                <th scope="col">Tipo</th>
+                                                                <th scope="col">N° Documento</th>
+                                                                <th scope="col">Datos</th>
+                                                            </tr>
+                                                            </thead>
+
+                                                            <tbody>
+                                                            <tr *ngFor="let regPer of dataServidor.listaMiembros | paginate: { itemsPerPage: 25, currentPage: p }; let i = index"
+                                                                (dblclick)="modal.close('seleccionar')"
+                                                                (click)="seleccionarMiembro(regPer, i); modelos.sel_en_lista_persona = regPer.iPersId"
+                                                                [class.table-active]="i == pers_seleccionada.i"
+                                                                [class.table-warning]="((modelos.sel_en_lista_persona != null) && (modelos.sel_en_lista_persona == regPer.iPersId))">
+                                                                <th scope="row">{{i + 1}}</th>
+                                                                <td>{{ regPer.cTipoPersDescripcion }}</td>
+                                                                <td>{{ regPer.cTipoIdentSigla }} {{ regPer.cPersDocumento }}</td>
+                                                                <td>{{ regPer.cPersDescripcion }}</td>
+                                                            </tr>
+                                                            </tbody>
+
+                                                        </table>
+
+                                                        <pagination-controls (pageChange)="p = $event"
+                                                                             previousLabel="Anterior"
+                                                                             nextLabel="Siguiente">
+                                                        </pagination-controls>
+                                                    </div><!-- /.content -->
+                                                </div><!-- /.col-* -->
+
+
+                                            </div>
+
+                                            <!-----------------------------footer para  guardar------------------------------------------------------------------>
+                                            <div class="modal-footer">
+                                                <button pButton type="button" label="Seleccionar" class="ui-button-raised"
+                                                        (click)="modal.close('seleccionar')"></button>
+                                                <button pButton type="button" label="Cancelar" class="ui-button-raised ui-button-warning"
+                                                        (click)="modal.dismiss('cancel')"></button>
+                                            </div>
+                                        </ng-template>
+
+                                        <ng-template #modalAgregarMiembros let-modal>
+                                            <form [formGroup]="frmAgregarMiembro"
+                                                  (ngSubmit)="accModalAgregarMiembro('agregar')">
+                                                <div class="modal-body row" style="margin: 2px;">
+
+                                                    <div class="col-md-12 form-group mb-2 pb-2">
+                                                        <div class="input-group  input-group-sm">
+                                                            <input type="text" placeholder="Par Evaluador"
+                                                                   class="form-control form-control-sm"
+                                                                   formControlName="valBuscMiembro"/>
+                                                            <!-- (keydown.enter)="abrirMiembroModal(1, modalPersona)"-->
+                                                            <div class="input-group-append">
+                                                                <button class="btn btn-outline-secondary btn-sm"
+                                                                        type="button"
+                                                                        (click)="abrirMiembroModal(1, modalPersona)">
+                                                                    <i class="icon-regular i-Find-User"></i> Buscar
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="col-md-6 form-group mb-2">
+                                                        <label>Nombres y Apellidos</label>
+                                                        <input type="text" disabled class="form-control form-control-sm"
+                                                               formControlName="txtNomApeMiembro">
+                                                    </div>
+
+                                                    <div class="col-md-6 form-group mb-2">
+                                                        <label>Fecha de Entrega</label>
+                                                        <input type="date" class="form-control form-control-sm"
+                                                               formControlName="dtFechaEntrega">
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button pButton type="button" label="Añadir" class="ui-button-raised"
+                                                            (click)="modal.close('seleccionar'); guardarMiembro();"></button>
+                                                    <button pButton type="button" label="Cancelar" class="ui-button-raised ui-button-warning"
+                                                            (click)="modal.dismiss('cancel')"></button>
+                                                </div>
+                                            </form>
+                                        </ng-template>
+
+                                    </ng-template>
+
+                                </ngb-tab>
+
+
+                                <ngb-tab id="configTab2"
+                                         *ngIf="[_constantes.perfilesDeUsuarios.oficina, _constantes.perfilesDeUsuarios.parEvaluador].includes(store.getItem('perfilSeleccionado'))
+        && estadoPropuesta != 1">
+                                    <ng-template ngbTabTitle>
+
+                                        Evaluar
+                                    </ng-template>
+                                    <ng-template ngbTabContent>
+                                        <app-menu></app-menu>
+                                    </ng-template>
+
+                                </ngb-tab>
+
+
+                                <ngb-tab id="configTab3"
+                                         *ngIf="[ _constantes.perfilesDeUsuarios.parEvaluador].includes(store.getItem('perfilSeleccionado')) && estadoPropuesta != 1">
+                                    <ng-template ngbTabTitle>
+                                        Resultados de Evaluación
+                                    </ng-template>
+                                    <ng-template ngbTabContent>
+
+                                        <app-evaluacion [idParEvaluador]="this.idParEvaluador" ></app-evaluacion>
+
+
+                                    </ng-template>
+                                </ngb-tab>
+
+                                <ngb-tab id="configTab4"
+                                         *ngIf="[_constantes.perfilesDeUsuarios.oficina ].includes(store.getItem('perfilSeleccionado'))">
+                                    <ng-template ngbTabTitle>
+
+                                        Resumen Evaluaciones
+                                    </ng-template>
+                                    <ng-template ngbTabContent>
+                                        <app-resumen></app-resumen>
+                                    </ng-template>
+
+                                </ngb-tab>
+
+                                <ngb-tab id="configTab5"
+                                         *ngIf="[ _constantes.perfilesDeUsuarios.parEvaluador].includes(store.getItem('perfilSeleccionado')) && estadoPropuesta == 1 ">
+                                    <ng-template ngbTabTitle>
+                                        Revision de Archivos  de Propuesta
+                                    </ng-template>
+                                    <ng-template ngbTabContent>
+
+                                        <app-propuestas [idParEvaluador]="this.idParEvaluador"></app-propuestas>
+
+                                    </ng-template>
+                                </ngb-tab>
+                            </ngb-tabset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

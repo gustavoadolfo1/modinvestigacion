@@ -1,0 +1,89 @@
+<div
+    *ngIf="searchService.abrirBusqueda && searchService.controlActual == formControlName"
+    class="search-ui rtl-ps-none" perfectScrollbar [@animate]="{value:'*',params:{y:'120px',opacity:'0',delay:'100ms', duration: '400ms'}}">
+    <div class="search-header">
+        <img src="./assets/images/logo.png" alt="" class="logo">
+        <button class="btn btn-icon bg-transparent float-right mt-2" (click)="searchService.abrirBusqueda = false">
+            <i class="i-Close-Window text-22 text-muted"></i>
+        </button>
+    </div>
+    <div class="row">
+        <div class="col-lg-9">
+            <input type="text"
+                   #txtBusqueda
+                   [value]="inputValue"
+                   [disabled]="isDisabled"
+                   (input)="onInput($event.target.value)"
+                   placeholder="Escriba aquí..." class="search-input" style="font-size: 2rem; width: 100%;" (keyup.escape)="searchService.abrirBusqueda = false" autofocus>
+        </div>
+        <div class="col-lg-3">
+            <ng-container *ngTemplateOutlet="templateBotones"></ng-container>
+        </div>
+    </div>
+    <div class="search-title">
+        <span class="text-muted">Resultados de Busqueda</span>
+    </div>
+    <ng-container *ngTemplateOutlet="templateResultados"></ng-container>
+</div>
+
+<div class="input-group  input-group-{{size}}" *ngFor="let ctrl of searchService.seleccionado">
+    <ng-container *ngIf="ctrl.control == formControlName">
+        <input
+            type="text"
+            [value]="ctrl.value"
+            class="form-control form-control-{{size}}"
+            disabled />
+        <div class="input-group-append">
+            <button
+                type="button"
+                class="btn btn-outline-secondary btn-{{size}}"
+                (click)="verificar()"
+            >
+                <app-ht-font-awesome name="search"></app-ht-font-awesome> {{(btnLabel ? '&nbsp;' + btnLabel : '')}}
+            </button>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="ctrl.control != formControlName">
+        <input
+            type="text"
+            [value]="inputValue"
+            [disabled]="isDisabled"
+            (input)="onInput($event.target.value)"
+            class="form-control form-control-{{size}}"
+            (keydown.enter)="verificar()"
+            (keyup.enter)="verificar()"
+        />
+        <div class="input-group-append">
+            <button
+                type="button"
+                class="btn btn-outline-secondary btn-{{size}}"
+                (click)="verificar()"
+            >
+                <app-ht-font-awesome name="search"></app-ht-font-awesome> {{(btnLabel ? '&nbsp;' + btnLabel : '')}}
+            </button>
+        </div>
+    </ng-container>
+
+</div>
+
+<div class="input-group  input-group-{{size}}" *ngIf="searchService.seleccionado.length <= 0">
+
+    <input
+        type="text"
+        [value]="inputValue"
+        [disabled]="isDisabled"
+        (input)="onInput($event.target.value)"
+        class="form-control form-control-{{size}}"
+        (keydown.enter)="verificar()"
+        (keyup.enter)="verificar()"
+    />
+    <div class="input-group-append">
+        <button
+            type="button"
+            class="btn btn-outline-secondary btn-{{size}}"
+            (click)="verificar()"
+        >
+            <app-ht-font-awesome name="search"></app-ht-font-awesome> {{(btnLabel ? '&nbsp;' + btnLabel : '')}} --
+        </button>
+    </div>
+</div>

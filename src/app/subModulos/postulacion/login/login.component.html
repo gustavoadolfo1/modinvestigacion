@@ -1,0 +1,134 @@
+<div class="card o-hidden custom" [@animate]="{value:'*',params:{y:'200px',opacity:'0',delay:'800ms', duration: '800ms'}}">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="p-4">
+                <h1 class="mb-3 text-18">Iniciar de Sesión</h1>
+                <form [formGroup]="signinForm" (ngSubmit)="signin()">
+                    <div class="form-group">
+                        <label for="usuario">Usuario</label>
+                        <input id="usuario" class="form-control" formControlName="usuario" type="text"
+                               (change)="verAreasCredencial()"
+                        >
+                        <app-ht-form-errors [control]="frmSignInControl.usuario"></app-ht-form-errors>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <div class="input-group">
+                            <input id="password" class="form-control" formControlName="password" [type]="show ? 'password' : 'text'">
+                            <span class="input-group-text" (click)="show = !show" style="border-radius: 0;">
+                                <app-ht-font-awesome [name]="show ? 'eye': 'eye-slash'"></app-ht-font-awesome>
+                            </span>
+                        </div>
+                        <app-ht-form-errors [control]="frmSignInControl.password"></app-ht-form-errors>
+                    </div>
+                    <!-- <button class="btn btn-rounded btn-primary btn-block mt-2">Sign In</button> -->
+                    <btn-loading [routerLink]="['/postulacion/convocatorias']" btnClass="btn-primary btn-block mt-3" [loadingText]="loadingText" [loading]="loading">
+                        INGRESAR
+                    </btn-loading>
+
+                </form>
+
+                <div class="input-group-append">
+                    <button class="btn btn-sm btn-outline-success" type="button"
+                            (click)="llamarAccion(['nuevo', modalEstadoProyecto])"
+                    >
+                        <app-ht-font-awesome name="plus"></app-ht-font-awesome>
+                        Registrarse
+                    </button>
+                </div>
+
+                <btn-loading [routerLink]="['/sesion/inicio']" btnClass="btn-primary btn-block mt-3" [loadingText]="loadingText" [loading]="loading">
+                    ENTRAR COMO DOCENTE RENACYT UNAM
+                </btn-loading>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #modalEstadoProyecto let-modal>
+
+    <form [formGroup]="frmEstadoProyecto" (ngSubmit)="enviarFormulario('mantenimiento_estado_proyecto')">
+        <div class="modal-body row" style="margin: 2px;">
+            <div class="col-sm-12">
+                <div class="col-sm-2" align="left">
+                    <label>Datos Generales</label>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2" align="right">
+                        <label>DNI (*)</label>
+                    </div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control mb-3"
+                               (change)="frmEstadoProyectoControl.detalle.setValue($event.target.value.toUpperCase())"
+                               formControlName="detalle">
+                    </div>
+                    <div class="col-sm-2" align="right">
+                        <label>Apellido Paterno (*)</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control mb-3"
+                               (change)="frmEstadoProyectoControl.detalle.setValue($event.target.value.toUpperCase())"
+                               formControlName="detalle">
+                    </div>
+                    <div class="col-sm-2" align="right">
+                        <label>Apellido Materno (*)</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control mb-3"
+                               (change)="frmEstadoProyectoControl.detalle.setValue($event.target.value.toUpperCase())"
+                               formControlName="detalle">
+                    </div>
+                    <div class="col-sm-2" align="right">
+                        <label>Nombres (*)</label>
+                    </div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control mb-3"
+                               (change)="frmEstadoProyectoControl.detalle.setValue($event.target.value.toUpperCase())"
+                               formControlName="detalle">
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-sm-2" align="left">
+                <label>Datos Para Inicio Sesion</label>
+            </div>
+            <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-sm-2" align="right">
+                        <label>Usuario (*)</label><br><LABEL>(Correo Institucional)</LABEL>
+                    </div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control mb-3"
+                               (change)="frmEstadoProyectoControl.detalle.setValue($event.target.value.toUpperCase())"
+                               formControlName="detalle">
+                    </div>
+                    <div class="col-sm-2" align="right">
+                        <label>Contrasena (*)</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control mb-3"
+                               (change)="frmEstadoProyectoControl.detalle.setValue($event.target.value.toUpperCase())"
+                               formControlName="detalle">
+                    </div>
+                    <div class="col-sm-2" align="right">
+                        <label>Validar Contrasena (*)</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control mb-3"
+                               (change)="frmEstadoProyectoControl.detalle.setValue($event.target.value.toUpperCase())"
+                               formControlName="detalle">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button pButton type="button" label="Registrarse en UNAM INVESTIGA" class="ui-button-raised"
+                    (click)="enviarFormulario('mantenimiento_estado_proyecto')"></button>
+            <button pButton type="button" label="CERRAR"
+                    class="ui-button-raised ui-button-warning"
+                    (click)="modal.dismiss('cancel'); limpiarFormulario();"></button>
+        </div>
+    </form>
+</ng-template>

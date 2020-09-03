@@ -1,0 +1,192 @@
+<ch-menu [_activeIndex]="this.activeIndex"></ch-menu>
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card mb-4">
+
+            <div class="card-header bg-primary text-white text-center">
+                PROGRAMACIÓN MONETARIA
+            </div>
+            <div class="card-body">
+                <div class="col-md-12 mb-2">
+                    <div class="row">
+                        <ng-container *ngIf="(this.perfilActual == perfilesDeUsuarios.oficina)">
+                            <div class="col-lg-12" align="center">
+                                <ch-requisito></ch-requisito>
+                            </div>
+                        </ng-container>
+                        <div class="col-md-12 mb-2">
+                            <ngb-tabset [justify]="'justified'" #t="ngbTabset">
+
+                                <ngb-tab id="configTab2">
+                                    <ng-template ngbTabTitle>
+                                        Registro de Presupuesto
+                                    </ng-template>
+
+                                    <ng-template ngbTabContent>
+
+
+                                        <app-financiable>
+
+                                        </app-financiable>
+                                    </ng-template>
+
+                                </ngb-tab>
+
+                                <ngb-tab id="configTab1">
+                                    <ng-template ngbTabTitle>
+                                        Registre Acciones de Presupuesto
+                                    </ng-template>
+
+                                    <ng-template ngbTabContent>
+                                        <div class="card-body">
+                                            <div class="col-md-12 mb-2">
+                                                <div class="row">
+                                                    <div class="col-md-12 mb-2">
+                                                        <ng-container>
+
+                                                            <p-accordion>
+                                                                <ng-container
+                                                                    *ngFor="let objEsp of dataExtraProyecto.objEspecifico; let i = index">
+                                                                    <p-accordionTab
+                                                                        header="{{ objEsp.iRubroId + ' ' +   objEsp.cRubroDescripcion}}">
+
+                                                                        <div class="col-sm-12 table-responsive">
+                                                                            <table
+                                                                                class="table table-hover table-bordered table-sm "
+                                                                            >
+                                                                                <thead class="thead-dark">
+
+                                                                                <tr class="text-center" width="100%">
+
+                                                                                    <th rowspan="2" width="5%">
+                                                                                        <button pButton type="button"
+                                                                                                class="ui-button-raised ui-button-info"
+                                                                                                icon="pi pi-plus"
+                                                                                                (click)="agregarActividad(i)"></button>
+                                                                                    </th>
+                                                                                    <th rowspan="2" width="55%">
+                                                                                        Descripcion
+                                                                                    </th>
+                                                                                    <th colspan="2" width="20%">Meta
+                                                                                        Física
+                                                                                    </th>
+                                                                                    <th colspan="2" width="20%">Meses
+                                                                                    </th>
+                                                                                </tr>
+                                                                                <tr class="text-center">
+
+                                                                                    <th>Cantidad</th>
+                                                                                    <th>unidad de Medida</th>
+                                                                                    <th>Monto</th>
+                                                                                    <th>Total</th>
+                                                                                </tr>
+                                                                                </thead>
+
+
+                                                                                <tbody>
+                                                                                    <tr *ngFor="let actividad of objEsp.actividad; let y = index"
+                                                                                    (click)="modelos.sel_en_lista_act = actividad"
+                                                                                    [class.table-warning]="((modelos.sel_en_lista_act != null) && (modelos.sel_en_lista_act == y))">
+
+                                                                                    <td class="text-center">
+                                                                                        <button pButton type="button"
+                                                                                                class="ui-button-raised ui-button-danger"
+                                                                                                icon="pi pi-times"
+                                                                                                (click)="eliminarActividad(i, y)"></button>
+                                                                                    </td>
+
+                                                                                    <td>
+                                                            <textarea class="form-control form-control-sm"
+                                                                      [class.is-invalid]="actividad.cDetalle==null || actividad.cDetalle==''"
+                                                                      [(ngModel)]="actividad.cDetalle"
+                                                            ></textarea>
+                                                                                    </td>
+
+                                                                                    <td align="center">
+                                                                                        <input type="number"
+                                                                                               [(ngModel)]="actividad.iCantidad"
+                                                                                               name="iCantidad"
+                                                                                               (change)="sumar()"
+                                                                                               min=0 max=100 number
+                                                                                               [range]="[0, 100]"
+                                                                                               [min]="0"
+                                                                                               [max]="100"
+                                                                                               #iCantidad="ngModel"
+                                                                                               class="form-control form-control-sm"
+                                                                                               [class.is-invalid]="actividad.iCantidad==null || actividad.iCantidad==''">
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <input
+                                                                                            [(ngModel)]="actividad.cUnidadMedida" name="cUnidadMedida"
+                                                                                            #cUnidadMedida="ngModel"
+                                                                                            class="form-control form-control-sm"
+                                                                                            (change)="mayusculaUnidad(actividad, $event.target.value.toUpperCase())"
+                                                                                            [class.is-invalid]="actividad.cUnidadMedida==null || actividad.cUnidadMedida==''">
+
+                                                                                    </td>
+
+                                                                                    <td>
+                                                                                        <input type="number"
+                                                                                               [(ngModel)]="actividad.nMonto"
+                                                                                               name="nMonto"
+                                                                                               step=".01"
+                                                                                               (change)="sumar()"
+                                                                                               #nMonto="ngModel"
+                                                                                               class="form-control form-control-sm"
+                                                                                               [class.is-invalid]="actividad.nMonto==null || actividad.nMonto==''">
+
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <input type="number"
+                                                                                               [value] = "calculoTotalActividad(actividad)"
+                                                                                               class="form-control form-control-sm"
+                                                                                               [disabled]="true"
+                                                                                        >
+
+                                                                                    </td>
+                                                                                     </tr>
+
+                                                                                <tr *ngIf="objEsp.actividad && objEsp.actividad.length > 0">
+                                                                                    <td colspan="5">total</td>
+                                                                                  <td>{{objEsp.sumatoriaTotal | currency:' '}}</td>
+                                                                                </tr>
+                                                                                </tbody>
+
+                                                                            </table>
+
+
+                                                                        </div>
+                                                                    </p-accordionTab>
+                                                                </ng-container>
+                                                            </p-accordion>
+                                                        </ng-container>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button pButton type="button" label="Guardar" class="ui-button-raised"
+                                                    (click)="guardarProgTec()"></button>
+                                            <button pButton type="button" label="Si ya completo puede ir al siguiente paso"
+                                                    class="ui-button-raised ui-button-warning"
+                                                    (click)="siguiente()"></button>
+                                        </div>
+                                    </ng-template>
+
+                                </ngb-tab>
+
+
+                            </ngb-tabset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+

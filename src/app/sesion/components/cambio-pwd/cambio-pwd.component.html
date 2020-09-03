@@ -1,0 +1,51 @@
+<div class="card o-hidden" [@animate]="{value:'*',params:{y:'120px',opacity:'0',delay:'100ms', duration: '400ms'}}">
+    <div class="row">
+        <div class="col-md-4 text-center align-items-center" style="background-size: cover;background-image: url(./assets/images/photo-long-1.jpg)">
+            <div class="pl-3 auth-right">
+                <div class="text-center m-4">
+                    <img src="assets/images/logo-aplicacion.png" alt="">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="p-4">
+
+                <h1 class="mb-3 text-18">Actualizacion de Datos</h1>
+                <!-- <p class="mb-4 text-muted font-small">Lorem ipsum dolor sit amet.</p> -->
+                <form [formGroup]="frmActualizar" (ngSubmit)="enviarFormulario('actualizarDatosInicial')">
+                    <div class="form-group">
+                        <label for="celular">Telefono Movil</label>
+                        <input id="celular" type="tel" class="form-control form-control-rounded" formControlName="celular">
+
+                        <app-ht-form-errors [control]="frmActualizarControl.celular"></app-ht-form-errors>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Correo Electrónico</label>
+                        <input id="email" type="email" class="form-control form-control-rounded" formControlName="email">
+
+                        <app-ht-form-errors [control]="frmActualizarControl.email"></app-ht-form-errors>
+
+                    </div>
+                    <h1 class="mb-3 text-18">Actualizacion de Contraseña</h1>
+                    <div class="form-group">
+                        <label for="new_password">Contraseña Nueva</label>
+                        <input id="new_password" type="password" class="form-control form-control-rounded" formControlName="new_password">
+
+                        <app-ht-form-errors [control]="frmActualizarControl.new_password"></app-ht-form-errors>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="re_new_password">Volver a Escribir Contraseña Nueva</label>
+                        <input id="re_new_password" type="password" class="form-control form-control-rounded" formControlName="re_new_password">
+
+                        <app-ht-form-errors [control]="frmActualizarControl.re_new_password"></app-ht-form-errors>
+
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block btn-rounded mt-3">Guardar Datos</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

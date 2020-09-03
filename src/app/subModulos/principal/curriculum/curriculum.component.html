@@ -1,0 +1,107 @@
+<div class="col-sm-4 mb-3">
+    <div class="input-group-append">
+        <button class="btn btn-sm btn-outline-success" type="button"
+                (click)="llamarAccion(['nuevo', modalCurriculum])">
+            <app-ht-font-awesome name="plus"></app-ht-font-awesome>
+            {{this.textoBt}}
+        </button>
+    </div>
+</div>
+
+<div class="col-sm-12 table-responsive">
+    <table class="table table-hover table-bordered table-sm ">
+        <thead class="thead-dark">
+        <tr class="text-center">
+            <th>#</th>
+            <th>DNI</th>
+            <th>Datos personales</th>
+            <th>Archivo CV</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let data of dataServidor.mostrarLista ; index as i"
+            (click)="modelos.sel_en_lista = data"
+            [class.table-warning]="((modelos.sel_en_lista != null) &&
+                                (modelos.sel_en_lista.iMiembroId == data.iMiembroId))">
+            <td>{{(i + 1)}}</td>
+            <td>{{data.cPersDocumento}} </td>
+            <td>{{data.cPersNombre}} {{data.cPersPaterno}} {{data.cPersMaterno}}</td>
+            <td class="text-center">
+                <button *ngIf="data.cDoc" type="button"
+                        class="btn btn-outline-danger"
+                        (click)="mostrarPDF(modalPDF, data.cDoc)">
+                    <app-ht-font-awesome name="file-pdf-o"></app-ht-font-awesome>
+                    PDF
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<ng-template #modalCurriculum let-modal>
+    <div class="modal-header ht-modal-header">
+        <div class="modal-title">
+            <h4>{{this.textoBt}}</h4>
+        </div>
+    </div>
+    <form [formGroup]="frmCurriculum" (ngSubmit)="enviarFormulario('mantenimiento_curriculum')">
+        <div class="modal-body row" style="margin: 2px;">
+            <div class="col-sm-12">
+                <div class="row">
+
+                    <div class="col-sm-12 mb-3">
+                        <p-panel header="Archivos" [toggleable]="true"
+                                 [style]="{'margin-bottom':'20px'}">
+
+                            <div class="col-sm-12 mb-3">
+                                <label>Archivo de Curriculum Vitae</label>
+                                <br><label *ngIf="!['',null].includes(this.archivos.cDoc)">Archivo
+                                Guardado: </label>
+                                <button pButton type="button" *ngIf="!['',null].includes(this.archivos.cDoc)"
+                                        label="{{this.archivos.cDoc.replace('storage/inv/convocatorias/','')}}"
+                                        class="ui-button-rounded ui-button-danger" icon="pi pi-file-pdf"
+                                        (click)="mostrarPDF(modalPDF, this.archivos.cDoc)"
+                                ></button>
+                                <global-file-upload formControlName="cDoc"
+                                                    [extensionesPermitidas]="['pdf']"></global-file-upload>
+                                <app-ht-form-errors
+                                    [control]="frmCurriculumControl.cDoc"></app-ht-form-errors>
+                            </div>
+                        </p-panel>
+                        <!-------
+                        {{frmConvocatoria.value | json }}
+                        -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button pButton type="button" label="Guardar" class="ui-button-raised" (click)="enviarFormulario('mantenimiento_curriculum')"></button>
+            <button pButton type="button" label="Cancelar" class="ui-button-raised ui-button-warning" (click)="modal.dismiss('cancel'); "></button>
+
+        </div>
+    </form>
+
+</ng-template>
+
+<ng-template #modalPDF let-modal>
+
+
+    <div class="modal-header">
+        <h4 class="modal-title">Curriculum Vitae</h4>
+        <button type="button" class="close" aria-label="Close button" aria-describedby="modal-title"
+                (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body row">
+        <div class="col-md-12 justify-content-center align-items-center">
+            <global-embed-pdf class="pdf_viewer" [src]="pdfActual"></global-embed-pdf>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary btn-rounded"
+                (click)="modal.dismiss('cancel'); cerrarPDF();">Salir
+        </button>
+    </div>
+</ng-template>

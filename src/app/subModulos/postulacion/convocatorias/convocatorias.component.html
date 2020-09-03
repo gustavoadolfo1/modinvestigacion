@@ -1,0 +1,66 @@
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white text-center">
+                Investigador Renacyt - Declaracion Juradada
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal-footer">
+    <button pButton type="button" label="Guardar" class="ui-button-raised"
+            (click)="enviarFormulario('mantenimiento_estado_proyecto')"></button>
+
+</div>
+
+    <form [formGroup]="frmEstadoProyecto" (ngSubmit)="enviarFormulario('mantenimiento_estado_proyecto')">
+        <div class="modal-body row" style="margin: 2px;">
+            <div class="col-sm-12">
+                <div class="row" >
+                    <div class="col-sm-2" align="right">
+                        <label>Condicion (*)</label>
+                    </div>
+                        <div class="col-sm-10">
+                        <input type="text" class="form-control mb-3"
+                               (ngModelChange)="imprimirModalTitulo($event)"
+                               (change)="frmEstadoProyectoControl.descripcion.setValue($event.target.value.toUpperCase())"
+                               formControlName="descripcion"
+                        >
+                        <app-ht-form-errors [control]="frmEstadoProyectoControl.descripcion"></app-ht-form-errors>
+
+                    </div>
+                    <div class="col-sm-2" align="right">
+                        <label>Tipo de Documento (*)</label>
+                    </div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control mb-3"
+                               (change)="frmEstadoProyectoControl.detalle.setValue($event.target.value.toUpperCase())"
+                               formControlName="detalle"
+                        >
+                        <app-ht-form-errors [control]="frmEstadoProyectoControl.detalle"></app-ht-form-errors>
+                    </div>
+
+                    <div class="col-sm-2" align="right">
+                        <label>Declaracion Jurada (*)</label>
+                    </div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control mb-3"
+                               (change)="frmEstadoProyectoControl.detalle.setValue($event.target.value.toUpperCase())"
+                               formControlName="detalle"
+                        >
+                        <app-ht-form-errors [control]="frmEstadoProyectoControl.detalle"></app-ht-form-errors>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+<!--        <btn-loading [routerLink]="['/proyecto/datos_proyecto']" btnClass="btn-primary btn-block mt-3" [loadingText]="loadingText" [loading]="loading">-->
+<!--            REGISTRE SU PROYECTO-->
+<!--        </btn-loading>-->
+    </form>
+
+
